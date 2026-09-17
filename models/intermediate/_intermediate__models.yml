@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: int_pedido_itens_agregado
+    description: >
+      Consolida os itens no nivel do pedido. E ephemeral de proposito: existe
+      para que o group by nao seja repetido em cada mart, mas nao vira tabela
+      no banco — o codigo e injetado como CTE em quem o referencia. Por isso
+      nao aparece no perfil de dados nem recebe testes proprios: o que ele
+      produz e validado em fct_pedidos, que e onde o resultado passa a existir.
+    columns:
+      - name: pedido_id
+        description: "{{ doc('pedido_id') }}"
+      - name: receita_bruta
+        description: "{{ doc('receita_bruta') }}"
+
+  - name: int_pedido_pagamentos_agregado
+    description: >
+      Consolida as parcelas no nivel do pedido e resolve o meio de pagamento
+      predominante (o de maior valor). Tambem ephemeral, pelo mesmo motivo
+      acima: a validacao acontece em fct_pedidos.
+    columns:
+      - name: pedido_id
+        description: "{{ doc('pedido_id') }}"
+      - name: meio_pagamento_principal
+        description: >
+          Meio de pagamento de maior valor no pedido. Desempate por ordem
+          alfabetica, para o resultado ser deterministico.

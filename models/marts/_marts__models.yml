@@ -1,0 +1,162 @@
+version: 2
+
+models:
+  - name: fct_pedidos
+    description: >
+      Tabela-fato central. Um pedido por linha, com cliente, valores, pagamento,
+      logistica e avaliacao resolvidos. Toda metrica de pedido do produto sai
+      daqui. Se um numero divergir entre o dashboard e o agente, a checagem
+      comeca nesta tabela.
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "receita_bruta >= 0"
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "not (foi_entregue and entregue_em is null)"
+          config:
+            severity: error
+    columns:
+      - name: pedido_id
+        description: "{{ doc('pedido_id') }}"
+        data_tests: [unique, not_null]
+      - name: cliente_id
+        description: "{{ doc('cliente_id') }}"
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_clientes')
+                field: cliente_id
+              config:
+                where: "cliente_id is not null"
+      - name: receita_bruta
+        description: "{{ doc('receita_bruta') }}"
+        data_tests: [not_null]
+      - name: valor_pago
+        description: >
+          Soma das parcelas registradas para o pedido. Pode divergir da receita
+          bruta por vouchers e arredondamento na origem — por isso as duas
+          convivem, em vez de uma ser derivada da outra.
+      - name: entrega_atrasada
+        description: Verdadeiro quando a entrega passou da data estimada.
+      - name: nota_avaliacao
+        description: Nota da avaliacao do pedido, quando houve avaliacao.
+
+  - name: fct_pedido_itens
+    description: >
+      Fato no grao de item. Usada para analises de produto, categoria e
+      vendedor, que no grao de pedido gerariam dupla contagem.
+    columns:
+      - name: item_id
+        description: Chave substituta do item (pedido + sequencial).
+        data_tests: [unique, not_null]
+      - name: pedido_id
+        description: "{{ doc('pedido_id') }}"
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_pedidos')
+                field: pedido_id
+      - name: categoria
+        description: Categoria do produto em portugues.
+      - name: receita_bruta
+        description: "{{ doc('receita_bruta') }}"
+
+  - name: dim_clientes
+    description: >
+      Uma linha por pessoa. Esta e a resposta oficial para "quantos clientes
+      temos": contar cliente_pedido_id superestima, porque a origem cria uma
+      chave nova a cada pedido.
+    columns:
+      - name: cliente_id
+        description: "{{ doc('cliente_id') }}"
+        data_tests: [unique, not_null]
+      - name: recencia_dias
+        description: "{{ doc('recencia_dias') }}"
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+      - name: qtd_pedidos
+        description: Pedidos distintos do cliente em toda a base.
+        data_tests: [not_null]
+      - name: receita_total
+        description: Soma da receita bruta de todos os pedidos do cliente.
+      - name: e_recorrente
+        description: Verdadeiro quando o cliente tem mais de um pedido.
+      - name: esta_ativo
+        description: >
+          Verdadeiro quando a ultima compra esta dentro da janela definida na
+          variavel janela_ativo_dias do dbt_project.yml.
+
+  - name: dim_produtos
+    description: Catalogo de produtos com desempenho de venda anexado.
+    columns:
+      - name: produto_id
+        description: Identificador do produto. Chave primaria da dimensao.
+        data_tests: [unique, not_null]
+      - name: categoria
+        description: >
+          Categoria em portugues, nunca nula: produto sem categoria na origem
+          vira 'nao_informado', para nao sumir de um group by.
+        data_tests: [not_null]
+      - name: nunca_vendido
+        description: Verdadeiro para produtos do catalogo sem nenhum item vendido.
+
+  - name: agg_kpis_diarios
+    description: >
+      Serie diaria de KPIs. E a tabela que os cards e os graficos do
+      Dashboard Inteligente consomem, e a mesma que o agente consulta —
+      e o que garante que os dois respondam o mesmo numero.
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "pedidos >= pedidos_entregues"
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "taxa_cancelamento between 0 and 1"
+    columns:
+      - name: data
+        description: Data da compra.
+        data_tests: [unique, not_null]
+      - name: pedidos
+        description: "{{ doc('kpi_pedidos') }}"
+        data_tests: [not_null]
+      - name: clientes
+        description: Clientes distintos (cliente_id) que compraram no dia.
+      - name: receita_bruta
+        description: "{{ doc('receita_bruta') }}"
+      - name: ticket_medio
+        description: "{{ doc('kpi_ticket_medio') }}"
+      - name: taxa_cancelamento
+        description: "{{ doc('kpi_taxa_cancelamento') }}"
+      - name: taxa_atraso
+        description: Pedidos entregues com atraso sobre o total de pedidos entregues no dia.
+      - name: nota_media
+        description: Media simples das notas dos pedidos comprados no dia.
+
+  - name: agg_clientes_rfv
+    description: >
+      Segmentacao RFV com os quintis calculados sobre a base inteira na data de
+      corte. Os nomes dos segmentos sao definidos aqui, e nao no BI, para que
+      "Campeao" queira dizer a mesma coisa em qualquer relatorio.
+    columns:
+      - name: cliente_id
+        description: "{{ doc('cliente_id') }}"
+        data_tests: [unique, not_null]
+      - name: r
+        description: Quintil de recencia, de 1 (pior) a 5 (melhor).
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+                quote: false
+      - name: f
+        description: Quintil de frequencia, de 1 a 5.
+      - name: v
+        description: Quintil de valor, de 1 a 5.
+      - name: segmento_rfv
+        description: "{{ doc('segmento_rfv') }}"
+        data_tests: [not_null]

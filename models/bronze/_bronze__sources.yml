@@ -1,0 +1,129 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: >
+      Camada bronze: copia fiel dos CSVs do dataset publico da Olist, carregada
+      por scripts/carregar_bronze.py. Nomes de coluna e tipos sao os da origem.
+      Nenhuma regra de negocio e aplicada aqui — bronze existe para ser
+      auditavel, nao para ser consumida.
+    schema: bronze
+    tables:
+
+      - name: pedidos
+        description: Um registro por pedido feito na plataforma.
+        columns:
+          - name: order_id
+            description: Identificador do pedido. Chave primaria da tabela.
+            data_tests:
+              - unique
+              - not_null
+          - name: customer_id
+            description: >
+              Chave do pedido para o cliente. Atencao: e unica por pedido, nao
+              identifica a pessoa. Quem identifica a pessoa e customer_unique_id.
+            data_tests:
+              - not_null
+          - name: order_status
+            description: Situacao do pedido na origem.
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ['delivered', 'shipped', 'canceled', 'unavailable',
+                             'invoiced', 'processing', 'created', 'approved']
+          - name: order_purchase_timestamp
+            description: Momento da compra. E a data base de todas as metricas temporais.
+            data_tests:
+              - not_null
+
+      - name: pedido_itens
+        description: Um registro por item dentro de um pedido.
+        columns:
+          - name: order_id
+            description: Pedido ao qual o item pertence.
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('bronze', 'pedidos')
+                    field: order_id
+          - name: order_item_id
+            description: Sequencial do item dentro do pedido.
+            data_tests:
+              - not_null
+          - name: price
+            description: Preco do item, sem frete.
+            data_tests:
+              - not_null
+          - name: freight_value
+            description: Frete rateado para o item.
+
+      - name: pedido_pagamentos
+        description: Um registro por parcela de pagamento de um pedido.
+        columns:
+          - name: order_id
+            data_tests:
+              - not_null
+          - name: payment_value
+            description: Valor pago nesta linha de pagamento.
+          - name: payment_type
+            description: Meio de pagamento usado.
+
+      - name: pedido_avaliacoes
+        description: Avaliacoes deixadas pelos clientes apos a entrega.
+        columns:
+          - name: review_id
+            description: Identificador da avaliacao. Tem duplicidade na origem.
+          - name: order_id
+            data_tests:
+              - not_null
+          - name: review_score
+            description: Nota de 1 a 5.
+
+      - name: clientes
+        description: >
+          Uma linha por pedido, nao por pessoa. customer_id e a chave do pedido
+          e customer_unique_id e a pessoa — a confusao entre as duas e a causa
+          classica de erro de contagem de clientes neste dataset.
+        columns:
+          - name: customer_id
+            data_tests:
+              - unique
+              - not_null
+          - name: customer_unique_id
+            description: Identificador da pessoa. Se repete entre pedidos.
+            data_tests:
+              - not_null
+          - name: customer_state
+            description: UF do cliente.
+
+      - name: produtos
+        description: Catalogo de produtos.
+        columns:
+          - name: product_id
+            data_tests:
+              - unique
+              - not_null
+          - name: product_category_name
+            description: Categoria em portugues. Tem nulos na origem.
+
+      - name: vendedores
+        description: Cadastro de vendedores do marketplace.
+        columns:
+          - name: seller_id
+            data_tests:
+              - unique
+              - not_null
+
+      - name: categoria_traducao
+        description: De-para de categoria de produto entre portugues e ingles.
+        columns:
+          - name: product_category_name
+            data_tests:
+              - unique
+              - not_null
+
+      - name: geolocalizacao
+        description: >
+          Coordenadas por prefixo de CEP. Tem varias linhas por prefixo, entao
+          nunca deve ser usada em join direto sem agregar antes.

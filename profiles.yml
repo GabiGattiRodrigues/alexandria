@@ -1,0 +1,17 @@
+# Perfil versionado junto do projeto: nao ha segredo nenhum aqui, o DuckDB e um
+# arquivo local. Rode com `dbt build --profiles-dir .` ou copie para ~/.dbt/.
+alexandria:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'alexandria.duckdb'
+      schema: main
+      threads: 4
+
+    # Alvo usado pelo GitHub Actions. Mesmo engine, banco descartavel.
+    ci:
+      type: duckdb
+      path: 'alexandria_ci.duckdb'
+      schema: main
+      threads: 4

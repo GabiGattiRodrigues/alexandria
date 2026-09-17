@@ -1,0 +1,72 @@
+<!--
+  Card do Alexandria para a aba de projetos do portfólio.
+
+  Como usar:
+  1. Você não precisa copiar página nenhuma para o site. A página do case, o
+     dashboard de qualidade e a documentação são publicados pelo GitHub Actions
+     no Pages do próprio repositório alexandria:
+         gabigattirodrigues.github.io/alexandria/                 página do case
+         gabigattirodrigues.github.io/alexandria/qualidade.html   dashboard
+         gabigattirodrigues.github.io/alexandria/docs/            linhagem
+     Este card só aponta para lá.
+  2. Cole o bloco abaixo junto dos cards do DaVinci, do Michelangelo e do
+     Dashboard Inteligente, dentro do mesmo container em grid.
+  3. Troque as classes `alx-*` pelas classes que os outros cards já usam — o CSS
+     no fim deste arquivo existe só para o card não ficar sem estilo caso você
+     cole antes de fazer essa troca.
+
+  Se me mandar o index.html do site, eu encaixo no padrão exato dos outros cards.
+-->
+
+<article class="alx-card">
+  <p class="alx-tag">Engenharia analítica</p>
+
+  <h3 class="alx-title">Alexandria</h3>
+
+  <p class="alx-desc" lang="pt-BR">
+    Modelagem em camadas, governança e observabilidade de dados com dbt e DuckDB.
+    Bronze, silver e gold, 75 testes de qualidade a cada build e um dashboard que
+    mostra cobertura, perfil das tabelas e a evolução build a build — a camada que
+    garante que o gráfico e o agente do Dashboard Inteligente respondam o mesmo número.
+  </p>
+
+  <ul class="alx-stack">
+    <li>dbt Core</li>
+    <li>DuckDB</li>
+    <li>Python</li>
+    <li>Streamlit</li>
+    <li>GitHub Actions</li>
+  </ul>
+
+  <p class="alx-links">
+    <a href="https://gabigattirodrigues.github.io/alexandria/">Ver o case</a>
+    <a href="https://github.com/GabiGattiRodrigues/alexandria">Repositório</a>
+    <a href="https://gabigattirodrigues.github.io/alexandria/qualidade.html">Dashboard de qualidade</a>
+  </p>
+</article>
+
+<style>
+  /* Estilo mínimo de fallback — remova quando adotar as classes do site. */
+  .alx-card {
+    display: flex; flex-direction: column; gap: 10px;
+    background: #fff; border: 1px solid #D7E0EA; border-radius: 10px;
+    padding: 20px; max-width: 420px;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #10233A;
+  }
+  .alx-tag {
+    margin: 0; font-size: .7rem; text-transform: uppercase; letter-spacing: .12em;
+    color: #7F92A6;
+  }
+  .alx-title { margin: 0; font-size: 1.25rem; }
+  .alx-desc  { margin: 0; font-size: .9rem; line-height: 1.55; color: #4C6179; }
+  .alx-stack {
+    display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 4px 0 0; padding: 0;
+  }
+  .alx-stack li {
+    font-size: .72rem; padding: 3px 9px; border-radius: 999px;
+    background: #EDF2F8; color: #4C6179;
+  }
+  .alx-links { display: flex; flex-wrap: wrap; gap: 14px; margin: 6px 0 0; font-size: .85rem; }
+  .alx-links a { color: #1857B0; text-decoration: none; font-weight: 500; }
+  .alx-links a:hover { text-decoration: underline; }
+</style>

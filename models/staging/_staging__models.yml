@@ -1,0 +1,150 @@
+version: 2
+
+models:
+  - name: stg_pedidos
+    description: >
+      Pedidos tipados e renomeados. Um pedido por linha. Aqui os timestamps
+      vazios da origem viram NULL e o prazo de entrega ja sai calculado.
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "entregue_em is null or entregue_em >= comprado_em"
+          config:
+            severity: error
+    columns:
+      - name: pedido_id
+        description: "{{ doc('pedido_id') }}"
+        data_tests: [unique, not_null]
+      - name: cliente_pedido_id
+        description: "{{ doc('cliente_pedido_id') }}"
+        data_tests: [not_null]
+      - name: status_pedido
+        description: Status normalizado para minusculas.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['delivered', 'shipped', 'canceled', 'unavailable',
+                         'invoiced', 'processing', 'created', 'approved']
+      - name: data_compra
+        description: Data da compra. Chave de tempo de todo o projeto.
+        data_tests: [not_null]
+      - name: dias_ate_entrega
+        description: Dias corridos entre a compra e a entrega ao cliente. NULL se nao entregue.
+      - name: dias_de_atraso
+        description: >
+          Positivo quando a entrega passou da data estimada, negativo quando
+          chegou antes. NULL se nao entregue.
+
+  - name: stg_pedido_itens
+    description: Itens de pedido tipados, com receita bruta ja somada (item + frete).
+    data_tests:
+      # O grao aqui e composto: um pedido tem varios itens. Testar unicidade de
+      # pedido_id sozinho estaria errado — o que precisa ser unico e o par.
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['pedido_id', 'item_sequencial']
+    columns:
+      - name: pedido_id
+        description: "{{ doc('pedido_id') }}"
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_pedidos')
+                field: pedido_id
+      - name: valor_item
+        description: Preco do item sem frete.
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: false
+      - name: valor_frete
+        description: Frete rateado para o item.
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+      - name: receita_bruta
+        description: "{{ doc('receita_bruta') }}"
+
+  - name: stg_clientes
+    description: >
+      Clientes no grao da origem — uma linha por cliente_pedido_id. Use
+      cliente_id para contar pessoas.
+    columns:
+      - name: cliente_pedido_id
+        description: "{{ doc('cliente_pedido_id') }}"
+        data_tests: [unique, not_null]
+      - name: cliente_id
+        description: "{{ doc('cliente_id') }}"
+        data_tests: [not_null]
+      - name: uf
+        description: UF do cliente, em maiusculas.
+
+  - name: stg_produtos
+    description: Produtos com categoria tratada. Sem categoria vira 'nao_informado'.
+    columns:
+      - name: produto_id
+        description: Identificador do produto no catalogo. Chave primaria.
+        data_tests: [unique, not_null]
+      - name: categoria
+        description: Categoria em portugues, nunca nula.
+        data_tests: [not_null]
+
+  - name: stg_vendedores
+    description: Vendedores do marketplace.
+    columns:
+      - name: vendedor_id
+        description: Identificador do vendedor. Chave primaria.
+        data_tests: [unique, not_null]
+
+  - name: stg_pedido_pagamentos
+    description: Uma linha por parcela de pagamento do pedido.
+    data_tests:
+      # Mesmo caso: o grao e pedido + sequencial da parcela.
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['pedido_id', 'pagamento_sequencial']
+    columns:
+      - name: pedido_id
+        description: "{{ doc('pedido_id') }}"
+        data_tests: [not_null]
+      - name: meio_pagamento
+        description: >
+          Meio de pagamento normalizado. Um pedido pode ter mais de uma linha,
+          entao esta coluna nao identifica sozinha o meio do pedido — o
+          predominante e resolvido em int_pedido_pagamentos_agregado.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
+      - name: valor_pago
+        description: Valor desta linha de pagamento, nao do pedido inteiro.
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+  - name: stg_pedido_avaliacoes
+    description: >
+      Uma avaliacao por pedido. A origem traz duplicidade de review_id e mais de
+      uma avaliacao por pedido; a deduplicacao (a mais recente vence) acontece
+      aqui, de uma vez, para todo o projeto.
+    columns:
+      - name: pedido_id
+        description: Chave do pedido. Unica apos a deduplicacao.
+        data_tests: [unique, not_null]
+      - name: nota
+        description: Nota de 1 a 5 dada pelo cliente.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+                quote: false
+      - name: promotor
+        description: Verdadeiro quando a nota e 4 ou 5.
+      - name: detrator
+        description: Verdadeiro quando a nota e 1 ou 2.

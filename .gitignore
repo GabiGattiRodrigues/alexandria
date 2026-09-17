@@ -1,0 +1,22 @@
+# Artefatos do dbt
+target/
+dbt_packages/
+logs/
+.user.yml
+
+# Bancos DuckDB (sao gerados, nunca versionados)
+*.duckdb
+*.duckdb.wal
+
+# Dados
+data/raw/
+data/sample/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Sistema
+.DS_Store

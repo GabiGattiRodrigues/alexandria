@@ -1,0 +1,2580 @@
+{
+  "gerado_em": "2026-09-17T18:15:57+00:00",
+  "dbt_versao": "1.12.5",
+  "build": {
+    "status": "aprovado",
+    "testes_total": 75,
+    "testes_aprovados": 75,
+    "testes_reprovados": 0,
+    "duracao_testes_s": 5.78,
+    "duracao_total_s": 2.85
+  },
+  "por_tipo": {
+    "not_null": 36,
+    "unique": 16,
+    "accepted_values": 5,
+    "expression_is_true": 5,
+    "relationships": 4,
+    "accepted_range": 4,
+    "singular": 3,
+    "unique_combination_of_columns": 2
+  },
+  "por_camada": {
+    "bronze": 20,
+    "silver": 26,
+    "gold": 29
+  },
+  "fontes": 9,
+  "testes": [
+    {
+      "nome": "source_accepted_values_bronze_pedidos_order_status__delivered__shipped__canceled__unavailable__invoiced__processing__created__approved",
+      "tipo": "accepted_values",
+      "camada": "bronze",
+      "alvo": "bronze.pedidos",
+      "coluna": "order_status",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.139
+    },
+    {
+      "nome": "source_not_null_bronze_categoria_traducao_product_category_name",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.categoria_traducao",
+      "coluna": "product_category_name",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.134
+    },
+    {
+      "nome": "source_not_null_bronze_clientes_customer_id",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.clientes",
+      "coluna": "customer_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.074
+    },
+    {
+      "nome": "source_not_null_bronze_clientes_customer_unique_id",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.clientes",
+      "coluna": "customer_unique_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.082
+    },
+    {
+      "nome": "source_not_null_bronze_pedido_avaliacoes_order_id",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.pedido_avaliacoes",
+      "coluna": "order_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.069
+    },
+    {
+      "nome": "source_not_null_bronze_pedido_itens_order_id",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.pedido_itens",
+      "coluna": "order_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.07
+    },
+    {
+      "nome": "source_not_null_bronze_pedido_itens_order_item_id",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.pedido_itens",
+      "coluna": "order_item_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.067
+    },
+    {
+      "nome": "source_not_null_bronze_pedido_itens_price",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.pedido_itens",
+      "coluna": "price",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.067
+    },
+    {
+      "nome": "source_not_null_bronze_pedido_pagamentos_order_id",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.pedido_pagamentos",
+      "coluna": "order_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.072
+    },
+    {
+      "nome": "source_not_null_bronze_pedidos_customer_id",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.pedidos",
+      "coluna": "customer_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.074
+    },
+    {
+      "nome": "source_not_null_bronze_pedidos_order_id",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.pedidos",
+      "coluna": "order_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.072
+    },
+    {
+      "nome": "source_not_null_bronze_pedidos_order_purchase_timestamp",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.pedidos",
+      "coluna": "order_purchase_timestamp",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.065
+    },
+    {
+      "nome": "source_not_null_bronze_produtos_product_id",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.produtos",
+      "coluna": "product_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.085
+    },
+    {
+      "nome": "source_not_null_bronze_vendedores_seller_id",
+      "tipo": "not_null",
+      "camada": "bronze",
+      "alvo": "bronze.vendedores",
+      "coluna": "seller_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.068
+    },
+    {
+      "nome": "source_relationships_bronze_pedido_itens_order_id__order_id__source_bronze_pedidos_",
+      "tipo": "relationships",
+      "camada": "bronze",
+      "alvo": "bronze.pedido_itens",
+      "coluna": "order_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.087
+    },
+    {
+      "nome": "source_unique_bronze_categoria_traducao_product_category_name",
+      "tipo": "unique",
+      "camada": "bronze",
+      "alvo": "bronze.categoria_traducao",
+      "coluna": "product_category_name",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.079
+    },
+    {
+      "nome": "source_unique_bronze_clientes_customer_id",
+      "tipo": "unique",
+      "camada": "bronze",
+      "alvo": "bronze.clientes",
+      "coluna": "customer_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.079
+    },
+    {
+      "nome": "source_unique_bronze_pedidos_order_id",
+      "tipo": "unique",
+      "camada": "bronze",
+      "alvo": "bronze.pedidos",
+      "coluna": "order_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.079
+    },
+    {
+      "nome": "source_unique_bronze_produtos_product_id",
+      "tipo": "unique",
+      "camada": "bronze",
+      "alvo": "bronze.produtos",
+      "coluna": "product_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.067
+    },
+    {
+      "nome": "source_unique_bronze_vendedores_seller_id",
+      "tipo": "unique",
+      "camada": "bronze",
+      "alvo": "bronze.vendedores",
+      "coluna": "seller_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.054
+    },
+    {
+      "nome": "accepted_values_agg_clientes_rfv_r__False__1__2__3__4__5",
+      "tipo": "accepted_values",
+      "camada": "gold",
+      "alvo": "agg_clientes_rfv",
+      "coluna": "r",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.081
+    },
+    {
+      "nome": "assert_cliente_sem_pedido_futuro",
+      "tipo": "singular",
+      "camada": "gold",
+      "alvo": "—",
+      "coluna": "",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.089
+    },
+    {
+      "nome": "assert_kpis_diarios_reconciliam",
+      "tipo": "singular",
+      "camada": "gold",
+      "alvo": "—",
+      "coluna": "",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.096
+    },
+    {
+      "nome": "assert_receita_bate_entre_camadas",
+      "tipo": "singular",
+      "camada": "gold",
+      "alvo": "—",
+      "coluna": "",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.084
+    },
+    {
+      "nome": "dbt_utils_accepted_range_dim_clientes_recencia_dias__True__0",
+      "tipo": "accepted_range",
+      "camada": "gold",
+      "alvo": "dim_clientes",
+      "coluna": "recencia_dias",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.086
+    },
+    {
+      "nome": "dbt_utils_expression_is_true_agg_kpis_diarios_pedidos_pedidos_entregues",
+      "tipo": "expression_is_true",
+      "camada": "gold",
+      "alvo": "agg_kpis_diarios",
+      "coluna": "",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.097
+    },
+    {
+      "nome": "dbt_utils_expression_is_true_agg_kpis_diarios_taxa_cancelamento_between_0_and_1",
+      "tipo": "expression_is_true",
+      "camada": "gold",
+      "alvo": "agg_kpis_diarios",
+      "coluna": "",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.075
+    },
+    {
+      "nome": "dbt_utils_expression_is_true_fct_pedidos_not_foi_entregue_and_entregue_em_is_null_",
+      "tipo": "expression_is_true",
+      "camada": "gold",
+      "alvo": "fct_pedidos",
+      "coluna": "",
+      "severidade": "error",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.091
+    },
+    {
+      "nome": "dbt_utils_expression_is_true_fct_pedidos_receita_bruta_0",
+      "tipo": "expression_is_true",
+      "camada": "gold",
+      "alvo": "fct_pedidos",
+      "coluna": "",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.074
+    },
+    {
+      "nome": "not_null_agg_clientes_rfv_cliente_id",
+      "tipo": "not_null",
+      "camada": "gold",
+      "alvo": "agg_clientes_rfv",
+      "coluna": "cliente_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.079
+    },
+    {
+      "nome": "not_null_agg_clientes_rfv_segmento_rfv",
+      "tipo": "not_null",
+      "camada": "gold",
+      "alvo": "agg_clientes_rfv",
+      "coluna": "segmento_rfv",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.064
+    },
+    {
+      "nome": "not_null_agg_kpis_diarios_data",
+      "tipo": "not_null",
+      "camada": "gold",
+      "alvo": "agg_kpis_diarios",
+      "coluna": "data",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.07
+    },
+    {
+      "nome": "not_null_agg_kpis_diarios_pedidos",
+      "tipo": "not_null",
+      "camada": "gold",
+      "alvo": "agg_kpis_diarios",
+      "coluna": "pedidos",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.067
+    },
+    {
+      "nome": "not_null_dim_clientes_cliente_id",
+      "tipo": "not_null",
+      "camada": "gold",
+      "alvo": "dim_clientes",
+      "coluna": "cliente_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.07
+    },
+    {
+      "nome": "not_null_dim_clientes_qtd_pedidos",
+      "tipo": "not_null",
+      "camada": "gold",
+      "alvo": "dim_clientes",
+      "coluna": "qtd_pedidos",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.101
+    },
+    {
+      "nome": "not_null_dim_produtos_categoria",
+      "tipo": "not_null",
+      "camada": "gold",
+      "alvo": "dim_produtos",
+      "coluna": "categoria",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.063
+    },
+    {
+      "nome": "not_null_dim_produtos_produto_id",
+      "tipo": "not_null",
+      "camada": "gold",
+      "alvo": "dim_produtos",
+      "coluna": "produto_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.089
+    },
+    {
+      "nome": "not_null_fct_pedido_itens_item_id",
+      "tipo": "not_null",
+      "camada": "gold",
+      "alvo": "fct_pedido_itens",
+      "coluna": "item_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.075
+    },
+    {
+      "nome": "not_null_fct_pedido_itens_pedido_id",
+      "tipo": "not_null",
+      "camada": "gold",
+      "alvo": "fct_pedido_itens",
+      "coluna": "pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.065
+    },
+    {
+      "nome": "not_null_fct_pedidos_pedido_id",
+      "tipo": "not_null",
+      "camada": "gold",
+      "alvo": "fct_pedidos",
+      "coluna": "pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.067
+    },
+    {
+      "nome": "not_null_fct_pedidos_receita_bruta",
+      "tipo": "not_null",
+      "camada": "gold",
+      "alvo": "fct_pedidos",
+      "coluna": "receita_bruta",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.069
+    },
+    {
+      "nome": "relationships_fct_pedido_itens_pedido_id__pedido_id__ref_fct_pedidos_",
+      "tipo": "relationships",
+      "camada": "gold",
+      "alvo": "fct_pedido_itens",
+      "coluna": "pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.066
+    },
+    {
+      "nome": "relationships_fct_pedidos_cliente_id__cliente_id__ref_dim_clientes_",
+      "tipo": "relationships",
+      "camada": "gold",
+      "alvo": "fct_pedidos",
+      "coluna": "cliente_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.072
+    },
+    {
+      "nome": "unique_agg_clientes_rfv_cliente_id",
+      "tipo": "unique",
+      "camada": "gold",
+      "alvo": "agg_clientes_rfv",
+      "coluna": "cliente_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.069
+    },
+    {
+      "nome": "unique_agg_kpis_diarios_data",
+      "tipo": "unique",
+      "camada": "gold",
+      "alvo": "agg_kpis_diarios",
+      "coluna": "data",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.038
+    },
+    {
+      "nome": "unique_dim_clientes_cliente_id",
+      "tipo": "unique",
+      "camada": "gold",
+      "alvo": "dim_clientes",
+      "coluna": "cliente_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.095
+    },
+    {
+      "nome": "unique_dim_produtos_produto_id",
+      "tipo": "unique",
+      "camada": "gold",
+      "alvo": "dim_produtos",
+      "coluna": "produto_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.075
+    },
+    {
+      "nome": "unique_fct_pedido_itens_item_id",
+      "tipo": "unique",
+      "camada": "gold",
+      "alvo": "fct_pedido_itens",
+      "coluna": "item_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.069
+    },
+    {
+      "nome": "unique_fct_pedidos_pedido_id",
+      "tipo": "unique",
+      "camada": "gold",
+      "alvo": "fct_pedidos",
+      "coluna": "pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.053
+    },
+    {
+      "nome": "accepted_values_stg_pedido_avaliacoes_nota__False__1__2__3__4__5",
+      "tipo": "accepted_values",
+      "camada": "silver",
+      "alvo": "stg_pedido_avaliacoes",
+      "coluna": "nota",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.078
+    },
+    {
+      "nome": "accepted_values_stg_pedido_pagamentos_meio_pagamento__credit_card__boleto__voucher__debit_card__not_defined",
+      "tipo": "accepted_values",
+      "camada": "silver",
+      "alvo": "stg_pedido_pagamentos",
+      "coluna": "meio_pagamento",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.073
+    },
+    {
+      "nome": "accepted_values_stg_pedidos_status_pedido__delivered__shipped__canceled__unavailable__invoiced__processing__created__approved",
+      "tipo": "accepted_values",
+      "camada": "silver",
+      "alvo": "stg_pedidos",
+      "coluna": "status_pedido",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.073
+    },
+    {
+      "nome": "dbt_utils_accepted_range_stg_pedido_itens_valor_frete__True__0",
+      "tipo": "accepted_range",
+      "camada": "silver",
+      "alvo": "stg_pedido_itens",
+      "coluna": "valor_frete",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.072
+    },
+    {
+      "nome": "dbt_utils_accepted_range_stg_pedido_itens_valor_item__False__0",
+      "tipo": "accepted_range",
+      "camada": "silver",
+      "alvo": "stg_pedido_itens",
+      "coluna": "valor_item",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.083
+    },
+    {
+      "nome": "dbt_utils_accepted_range_stg_pedido_pagamentos_valor_pago__True__0",
+      "tipo": "accepted_range",
+      "camada": "silver",
+      "alvo": "stg_pedido_pagamentos",
+      "coluna": "valor_pago",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.088
+    },
+    {
+      "nome": "dbt_utils_expression_is_true_stg_pedidos_entregue_em_is_null_or_entregue_em_comprado_em",
+      "tipo": "expression_is_true",
+      "camada": "silver",
+      "alvo": "stg_pedidos",
+      "coluna": "",
+      "severidade": "error",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.074
+    },
+    {
+      "nome": "dbt_utils_unique_combination_of_columns_stg_pedido_itens_pedido_id__item_sequencial",
+      "tipo": "unique_combination_of_columns",
+      "camada": "silver",
+      "alvo": "stg_pedido_itens",
+      "coluna": "",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.091
+    },
+    {
+      "nome": "dbt_utils_unique_combination_of_columns_stg_pedido_pagamentos_pedido_id__pagamento_sequencial",
+      "tipo": "unique_combination_of_columns",
+      "camada": "silver",
+      "alvo": "stg_pedido_pagamentos",
+      "coluna": "",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.074
+    },
+    {
+      "nome": "not_null_stg_clientes_cliente_id",
+      "tipo": "not_null",
+      "camada": "silver",
+      "alvo": "stg_clientes",
+      "coluna": "cliente_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.059
+    },
+    {
+      "nome": "not_null_stg_clientes_cliente_pedido_id",
+      "tipo": "not_null",
+      "camada": "silver",
+      "alvo": "stg_clientes",
+      "coluna": "cliente_pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.06
+    },
+    {
+      "nome": "not_null_stg_pedido_avaliacoes_pedido_id",
+      "tipo": "not_null",
+      "camada": "silver",
+      "alvo": "stg_pedido_avaliacoes",
+      "coluna": "pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.103
+    },
+    {
+      "nome": "not_null_stg_pedido_itens_pedido_id",
+      "tipo": "not_null",
+      "camada": "silver",
+      "alvo": "stg_pedido_itens",
+      "coluna": "pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.063
+    },
+    {
+      "nome": "not_null_stg_pedido_pagamentos_pedido_id",
+      "tipo": "not_null",
+      "camada": "silver",
+      "alvo": "stg_pedido_pagamentos",
+      "coluna": "pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.076
+    },
+    {
+      "nome": "not_null_stg_pedidos_cliente_pedido_id",
+      "tipo": "not_null",
+      "camada": "silver",
+      "alvo": "stg_pedidos",
+      "coluna": "cliente_pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.087
+    },
+    {
+      "nome": "not_null_stg_pedidos_data_compra",
+      "tipo": "not_null",
+      "camada": "silver",
+      "alvo": "stg_pedidos",
+      "coluna": "data_compra",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.086
+    },
+    {
+      "nome": "not_null_stg_pedidos_pedido_id",
+      "tipo": "not_null",
+      "camada": "silver",
+      "alvo": "stg_pedidos",
+      "coluna": "pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.088
+    },
+    {
+      "nome": "not_null_stg_produtos_categoria",
+      "tipo": "not_null",
+      "camada": "silver",
+      "alvo": "stg_produtos",
+      "coluna": "categoria",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.078
+    },
+    {
+      "nome": "not_null_stg_produtos_produto_id",
+      "tipo": "not_null",
+      "camada": "silver",
+      "alvo": "stg_produtos",
+      "coluna": "produto_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.059
+    },
+    {
+      "nome": "not_null_stg_vendedores_vendedor_id",
+      "tipo": "not_null",
+      "camada": "silver",
+      "alvo": "stg_vendedores",
+      "coluna": "vendedor_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.06
+    },
+    {
+      "nome": "relationships_stg_pedido_itens_pedido_id__pedido_id__ref_stg_pedidos_",
+      "tipo": "relationships",
+      "camada": "silver",
+      "alvo": "stg_pedido_itens",
+      "coluna": "pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.089
+    },
+    {
+      "nome": "unique_stg_clientes_cliente_pedido_id",
+      "tipo": "unique",
+      "camada": "silver",
+      "alvo": "stg_clientes",
+      "coluna": "cliente_pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.091
+    },
+    {
+      "nome": "unique_stg_pedido_avaliacoes_pedido_id",
+      "tipo": "unique",
+      "camada": "silver",
+      "alvo": "stg_pedido_avaliacoes",
+      "coluna": "pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.086
+    },
+    {
+      "nome": "unique_stg_pedidos_pedido_id",
+      "tipo": "unique",
+      "camada": "silver",
+      "alvo": "stg_pedidos",
+      "coluna": "pedido_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.087
+    },
+    {
+      "nome": "unique_stg_produtos_produto_id",
+      "tipo": "unique",
+      "camada": "silver",
+      "alvo": "stg_produtos",
+      "coluna": "produto_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.068
+    },
+    {
+      "nome": "unique_stg_vendedores_vendedor_id",
+      "tipo": "unique",
+      "camada": "silver",
+      "alvo": "stg_vendedores",
+      "coluna": "vendedor_id",
+      "severidade": "ERROR",
+      "status": "pass",
+      "violacoes": 0,
+      "duracao_s": 0.066
+    }
+  ],
+  "cobertura": [
+    {
+      "nome": "agg_clientes_rfv",
+      "camada": "gold",
+      "materializacao": "table",
+      "descrito": true,
+      "colunas_declaradas": 5,
+      "colunas_documentadas": 5,
+      "colunas_testadas": 3,
+      "testes": 4,
+      "tem_teste_de_grao": true
+    },
+    {
+      "nome": "agg_kpis_diarios",
+      "camada": "gold",
+      "materializacao": "table",
+      "descrito": true,
+      "colunas_declaradas": 8,
+      "colunas_documentadas": 8,
+      "colunas_testadas": 2,
+      "testes": 6,
+      "tem_teste_de_grao": true
+    },
+    {
+      "nome": "dim_clientes",
+      "camada": "gold",
+      "materializacao": "table",
+      "descrito": true,
+      "colunas_declaradas": 6,
+      "colunas_documentadas": 6,
+      "colunas_testadas": 3,
+      "testes": 6,
+      "tem_teste_de_grao": true
+    },
+    {
+      "nome": "dim_produtos",
+      "camada": "gold",
+      "materializacao": "table",
+      "descrito": true,
+      "colunas_declaradas": 3,
+      "colunas_documentadas": 3,
+      "colunas_testadas": 2,
+      "testes": 3,
+      "tem_teste_de_grao": true
+    },
+    {
+      "nome": "fct_pedido_itens",
+      "camada": "gold",
+      "materializacao": "table",
+      "descrito": true,
+      "colunas_declaradas": 4,
+      "colunas_documentadas": 4,
+      "colunas_testadas": 2,
+      "testes": 4,
+      "tem_teste_de_grao": true
+    },
+    {
+      "nome": "fct_pedidos",
+      "camada": "gold",
+      "materializacao": "table",
+      "descrito": true,
+      "colunas_declaradas": 6,
+      "colunas_documentadas": 6,
+      "colunas_testadas": 3,
+      "testes": 9,
+      "tem_teste_de_grao": true
+    },
+    {
+      "nome": "int_pedido_itens_agregado",
+      "camada": "silver",
+      "materializacao": "ephemeral",
+      "descrito": true,
+      "colunas_declaradas": 2,
+      "colunas_documentadas": 2,
+      "colunas_testadas": 0,
+      "testes": 0,
+      "tem_teste_de_grao": false
+    },
+    {
+      "nome": "int_pedido_pagamentos_agregado",
+      "camada": "silver",
+      "materializacao": "ephemeral",
+      "descrito": true,
+      "colunas_declaradas": 2,
+      "colunas_documentadas": 2,
+      "colunas_testadas": 0,
+      "testes": 0,
+      "tem_teste_de_grao": false
+    },
+    {
+      "nome": "stg_clientes",
+      "camada": "silver",
+      "materializacao": "view",
+      "descrito": true,
+      "colunas_declaradas": 3,
+      "colunas_documentadas": 3,
+      "colunas_testadas": 2,
+      "testes": 3,
+      "tem_teste_de_grao": true
+    },
+    {
+      "nome": "stg_pedido_avaliacoes",
+      "camada": "silver",
+      "materializacao": "view",
+      "descrito": true,
+      "colunas_declaradas": 4,
+      "colunas_documentadas": 4,
+      "colunas_testadas": 2,
+      "testes": 3,
+      "tem_teste_de_grao": true
+    },
+    {
+      "nome": "stg_pedido_itens",
+      "camada": "silver",
+      "materializacao": "view",
+      "descrito": true,
+      "colunas_declaradas": 4,
+      "colunas_documentadas": 4,
+      "colunas_testadas": 3,
+      "testes": 6,
+      "tem_teste_de_grao": true
+    },
+    {
+      "nome": "stg_pedido_pagamentos",
+      "camada": "silver",
+      "materializacao": "view",
+      "descrito": true,
+      "colunas_declaradas": 3,
+      "colunas_documentadas": 3,
+      "colunas_testadas": 3,
+      "testes": 4,
+      "tem_teste_de_grao": true
+    },
+    {
+      "nome": "stg_pedidos",
+      "camada": "silver",
+      "materializacao": "view",
+      "descrito": true,
+      "colunas_declaradas": 6,
+      "colunas_documentadas": 6,
+      "colunas_testadas": 4,
+      "testes": 7,
+      "tem_teste_de_grao": true
+    },
+    {
+      "nome": "stg_produtos",
+      "camada": "silver",
+      "materializacao": "view",
+      "descrito": true,
+      "colunas_declaradas": 2,
+      "colunas_documentadas": 2,
+      "colunas_testadas": 2,
+      "testes": 3,
+      "tem_teste_de_grao": true
+    },
+    {
+      "nome": "stg_vendedores",
+      "camada": "silver",
+      "materializacao": "view",
+      "descrito": true,
+      "colunas_declaradas": 1,
+      "colunas_documentadas": 1,
+      "colunas_testadas": 1,
+      "testes": 2,
+      "tem_teste_de_grao": true
+    }
+  ],
+  "resumo_cobertura": {
+    "colunas_fisicas": 156,
+    "modelos": 15,
+    "modelos_descritos": 15,
+    "modelos_com_teste_de_grao": 13,
+    "modelos_sem_teste": 2,
+    "colunas_declaradas": 59,
+    "colunas_documentadas": 59,
+    "colunas_testadas": 32
+  },
+  "perfil": [
+    {
+      "tabela": "agg_clientes_rfv",
+      "camada": "gold",
+      "schema": "gold",
+      "linhas": 2349,
+      "colunas": [
+        {
+          "coluna": "cliente_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2349,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "primeira_compra",
+          "tipo": "DATE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 587,
+          "distintos_pct": 24.99,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "ultima_compra",
+          "tipo": "DATE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 582,
+          "distintos_pct": 24.78,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "qtd_pedidos",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 7,
+          "distintos_pct": 0.3,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "qtd_pedidos_entregues",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 6,
+          "distintos_pct": 0.26,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "receita_total",
+          "tipo": "DECIMAL(38,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2282,
+          "distintos_pct": 97.15,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "ticket_medio",
+          "tipo": "DOUBLE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2287,
+          "distintos_pct": 97.36,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "nota_media",
+          "tipo": "DOUBLE",
+          "nulos": 352,
+          "nulos_pct": 14.99,
+          "distintos": 25,
+          "distintos_pct": 1.06,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "uf",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 10,
+          "distintos_pct": 0.43,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "cidade",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 400,
+          "distintos_pct": 17.03,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "meio_pagamento_recente",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4,
+          "distintos_pct": 0.17,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "recencia_dias",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 582,
+          "distintos_pct": 24.78,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "tempo_de_vida_dias",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 478,
+          "distintos_pct": 20.35,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "e_recorrente",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.09,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "esta_ativo",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.09,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "r",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 5,
+          "distintos_pct": 0.21,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "f",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 5,
+          "distintos_pct": 0.21,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "v",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 5,
+          "distintos_pct": 0.21,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "rfv",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 78,
+          "distintos_pct": 3.32,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "score_rfv",
+          "tipo": "DOUBLE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 13,
+          "distintos_pct": 0.55,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "segmento_rfv",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 8,
+          "distintos_pct": 0.34,
+          "chave_candidata": false
+        }
+      ]
+    },
+    {
+      "tabela": "agg_kpis_diarios",
+      "camada": "gold",
+      "schema": "gold",
+      "linhas": 607,
+      "colunas": [
+        {
+          "coluna": "data",
+          "tipo": "DATE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 607,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "mes",
+          "tipo": "TIMESTAMP",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 20,
+          "distintos_pct": 3.29,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "pedidos",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 15,
+          "distintos_pct": 2.47,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "pedidos_entregues",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 14,
+          "distintos_pct": 2.31,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "pedidos_cancelados",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 3,
+          "distintos_pct": 0.49,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "clientes",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 15,
+          "distintos_pct": 2.47,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "receita_bruta",
+          "tipo": "DECIMAL(38,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 606,
+          "distintos_pct": 99.84,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "receita_itens",
+          "tipo": "DECIMAL(38,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 606,
+          "distintos_pct": 99.84,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "receita_frete",
+          "tipo": "DECIMAL(38,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 603,
+          "distintos_pct": 99.34,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "ticket_medio",
+          "tipo": "DOUBLE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 607,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "itens",
+          "tipo": "HUGEINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 21,
+          "distintos_pct": 3.46,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "nota_media",
+          "tipo": "DOUBLE",
+          "nulos": 2,
+          "nulos_pct": 0.33,
+          "distintos": 72,
+          "distintos_pct": 11.86,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "taxa_detratores",
+          "tipo": "DOUBLE",
+          "nulos": 2,
+          "nulos_pct": 0.33,
+          "distintos": 26,
+          "distintos_pct": 4.28,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "prazo_medio_entrega_dias",
+          "tipo": "DOUBLE",
+          "nulos": 1,
+          "nulos_pct": 0.16,
+          "distintos": 263,
+          "distintos_pct": 43.33,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "taxa_atraso",
+          "tipo": "DOUBLE",
+          "nulos": 1,
+          "nulos_pct": 0.16,
+          "distintos": 38,
+          "distintos_pct": 6.26,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "taxa_cancelamento",
+          "tipo": "DOUBLE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 19,
+          "distintos_pct": 3.13,
+          "chave_candidata": false
+        }
+      ]
+    },
+    {
+      "tabela": "dim_clientes",
+      "camada": "gold",
+      "schema": "gold",
+      "linhas": 2349,
+      "colunas": [
+        {
+          "coluna": "cliente_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2349,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "primeira_compra",
+          "tipo": "DATE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 587,
+          "distintos_pct": 24.99,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "ultima_compra",
+          "tipo": "DATE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 582,
+          "distintos_pct": 24.78,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "qtd_pedidos",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 7,
+          "distintos_pct": 0.3,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "qtd_pedidos_entregues",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 6,
+          "distintos_pct": 0.26,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "receita_total",
+          "tipo": "DECIMAL(38,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2282,
+          "distintos_pct": 97.15,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "ticket_medio",
+          "tipo": "DOUBLE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2287,
+          "distintos_pct": 97.36,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "nota_media",
+          "tipo": "DOUBLE",
+          "nulos": 352,
+          "nulos_pct": 14.99,
+          "distintos": 25,
+          "distintos_pct": 1.06,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "uf",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 10,
+          "distintos_pct": 0.43,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "cidade",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 400,
+          "distintos_pct": 17.03,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "meio_pagamento_recente",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4,
+          "distintos_pct": 0.17,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "recencia_dias",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 582,
+          "distintos_pct": 24.78,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "tempo_de_vida_dias",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 478,
+          "distintos_pct": 20.35,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "e_recorrente",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.09,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "esta_ativo",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.09,
+          "chave_candidata": false
+        }
+      ]
+    },
+    {
+      "tabela": "dim_produtos",
+      "camada": "gold",
+      "schema": "gold",
+      "linhas": 1000,
+      "colunas": [
+        {
+          "coluna": "produto_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 1000,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "categoria",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 10,
+          "distintos_pct": 1.0,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "categoria_en",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 10,
+          "distintos_pct": 1.0,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "peso_g",
+          "tipo": "INTEGER",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 967,
+          "distintos_pct": 96.7,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "qtd_fotos",
+          "tipo": "INTEGER",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 6,
+          "distintos_pct": 0.6,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "volume_cm3",
+          "tipo": "INTEGER",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 926,
+          "distintos_pct": 92.6,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "qtd_itens_vendidos",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 14,
+          "distintos_pct": 1.4,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "qtd_pedidos",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 14,
+          "distintos_pct": 1.4,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "receita_total",
+          "tipo": "DECIMAL(38,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 992,
+          "distintos_pct": 99.2,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "preco_medio",
+          "tipo": "DOUBLE",
+          "nulos": 4,
+          "nulos_pct": 0.4,
+          "distintos": 994,
+          "distintos_pct": 99.4,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "primeira_venda",
+          "tipo": "DATE",
+          "nulos": 4,
+          "nulos_pct": 0.4,
+          "distintos": 315,
+          "distintos_pct": 31.5,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "ultima_venda",
+          "tipo": "DATE",
+          "nulos": 4,
+          "nulos_pct": 0.4,
+          "distintos": 297,
+          "distintos_pct": 29.7,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "nunca_vendido",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.2,
+          "chave_candidata": false
+        }
+      ]
+    },
+    {
+      "tabela": "fct_pedido_itens",
+      "camada": "gold",
+      "schema": "gold",
+      "linhas": 5192,
+      "colunas": [
+        {
+          "coluna": "pedido_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4000,
+          "distintos_pct": 77.04,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "item_sequencial",
+          "tipo": "INTEGER",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4,
+          "distintos_pct": 0.08,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "item_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 5192,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "produto_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 996,
+          "distintos_pct": 19.18,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "vendedor_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 200,
+          "distintos_pct": 3.85,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "categoria",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 10,
+          "distintos_pct": 0.19,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "categoria_en",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 10,
+          "distintos_pct": 0.19,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "vendedor_uf",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 10,
+          "distintos_pct": 0.19,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "data_compra",
+          "tipo": "DATE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 607,
+          "distintos_pct": 11.69,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "mes_compra",
+          "tipo": "TIMESTAMP",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 20,
+          "distintos_pct": 0.39,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "status_pedido",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 6,
+          "distintos_pct": 0.12,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "foi_entregue",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.04,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "valor_item",
+          "tipo": "DECIMAL(12,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4387,
+          "distintos_pct": 84.5,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "valor_frete",
+          "tipo": "DECIMAL(12,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2692,
+          "distintos_pct": 51.85,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "receita_bruta",
+          "tipo": "DECIMAL(13,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4507,
+          "distintos_pct": 86.81,
+          "chave_candidata": false
+        }
+      ]
+    },
+    {
+      "tabela": "fct_pedidos",
+      "camada": "gold",
+      "schema": "gold",
+      "linhas": 4000,
+      "colunas": [
+        {
+          "coluna": "pedido_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4000,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "cliente_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2349,
+          "distintos_pct": 58.73,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "cliente_pedido_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2349,
+          "distintos_pct": 58.73,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "cliente_uf",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 10,
+          "distintos_pct": 0.25,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "cliente_cidade",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 400,
+          "distintos_pct": 10.0,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "status_pedido",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 6,
+          "distintos_pct": 0.15,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "foi_entregue",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.05,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "foi_cancelado",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.05,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "data_compra",
+          "tipo": "DATE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 607,
+          "distintos_pct": 15.18,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "mes_compra",
+          "tipo": "TIMESTAMP",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 20,
+          "distintos_pct": 0.5,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "comprado_em",
+          "tipo": "TIMESTAMP",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4000,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "entregue_em",
+          "tipo": "TIMESTAMP",
+          "nulos": 490,
+          "nulos_pct": 12.25,
+          "distintos": 3510,
+          "distintos_pct": 87.75,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "entrega_estimada_em",
+          "tipo": "TIMESTAMP",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4000,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "dias_ate_entrega",
+          "tipo": "BIGINT",
+          "nulos": 490,
+          "nulos_pct": 12.25,
+          "distintos": 32,
+          "distintos_pct": 0.8,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "dias_de_atraso",
+          "tipo": "BIGINT",
+          "nulos": 490,
+          "nulos_pct": 12.25,
+          "distintos": 57,
+          "distintos_pct": 1.43,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "entrega_atrasada",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.05,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "qtd_itens",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4,
+          "distintos_pct": 0.1,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "qtd_produtos_distintos",
+          "tipo": "BIGINT",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4,
+          "distintos_pct": 0.1,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "valor_itens",
+          "tipo": "DECIMAL(38,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 3604,
+          "distintos_pct": 90.1,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "valor_frete",
+          "tipo": "DECIMAL(38,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2597,
+          "distintos_pct": 64.92,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "receita_bruta",
+          "tipo": "DECIMAL(38,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 3672,
+          "distintos_pct": 91.8,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "valor_pago",
+          "tipo": "DECIMAL(38,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 3672,
+          "distintos_pct": 91.8,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "qtd_parcelas",
+          "tipo": "INTEGER",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 6,
+          "distintos_pct": 0.15,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "meio_pagamento_principal",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4,
+          "distintos_pct": 0.1,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "nota_avaliacao",
+          "tipo": "INTEGER",
+          "nulos": 1025,
+          "nulos_pct": 25.62,
+          "distintos": 5,
+          "distintos_pct": 0.12,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "promotor",
+          "tipo": "BOOLEAN",
+          "nulos": 1025,
+          "nulos_pct": 25.62,
+          "distintos": 2,
+          "distintos_pct": 0.05,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "detrator",
+          "tipo": "BOOLEAN",
+          "nulos": 1025,
+          "nulos_pct": 25.62,
+          "distintos": 2,
+          "distintos_pct": 0.05,
+          "chave_candidata": false
+        }
+      ]
+    },
+    {
+      "tabela": "stg_clientes",
+      "camada": "silver",
+      "schema": "silver",
+      "linhas": 3400,
+      "colunas": [
+        {
+          "coluna": "cliente_pedido_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 3400,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "cliente_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 3400,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "cep_prefixo",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 3332,
+          "distintos_pct": 98.0,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "cidade",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 400,
+          "distintos_pct": 11.76,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "uf",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 10,
+          "distintos_pct": 0.29,
+          "chave_candidata": false
+        }
+      ]
+    },
+    {
+      "tabela": "stg_pedido_avaliacoes",
+      "camada": "silver",
+      "schema": "silver",
+      "linhas": 2975,
+      "colunas": [
+        {
+          "coluna": "avaliacao_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2975,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "pedido_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2975,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "nota",
+          "tipo": "INTEGER",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 5,
+          "distintos_pct": 0.17,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "avaliada_em",
+          "tipo": "TIMESTAMP",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 609,
+          "distintos_pct": 20.47,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "respondida_em",
+          "tipo": "TIMESTAMP",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2975,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "promotor",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.07,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "detrator",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.07,
+          "chave_candidata": false
+        }
+      ]
+    },
+    {
+      "tabela": "stg_pedido_itens",
+      "camada": "silver",
+      "schema": "silver",
+      "linhas": 5192,
+      "colunas": [
+        {
+          "coluna": "pedido_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4000,
+          "distintos_pct": 77.04,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "item_sequencial",
+          "tipo": "INTEGER",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4,
+          "distintos_pct": 0.08,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "produto_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 996,
+          "distintos_pct": 19.18,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "vendedor_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 200,
+          "distintos_pct": 3.85,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "limite_postagem_em",
+          "tipo": "TIMESTAMP",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4000,
+          "distintos_pct": 77.04,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "valor_item",
+          "tipo": "DECIMAL(12,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4387,
+          "distintos_pct": 84.5,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "valor_frete",
+          "tipo": "DECIMAL(12,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2692,
+          "distintos_pct": 51.85,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "receita_bruta",
+          "tipo": "DECIMAL(13,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4507,
+          "distintos_pct": 86.81,
+          "chave_candidata": false
+        }
+      ]
+    },
+    {
+      "tabela": "stg_pedido_pagamentos",
+      "camada": "silver",
+      "schema": "silver",
+      "linhas": 4000,
+      "colunas": [
+        {
+          "coluna": "pedido_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4000,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "pagamento_sequencial",
+          "tipo": "INTEGER",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 1,
+          "distintos_pct": 0.03,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "meio_pagamento",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4,
+          "distintos_pct": 0.1,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "qtd_parcelas",
+          "tipo": "INTEGER",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 6,
+          "distintos_pct": 0.15,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "valor_pago",
+          "tipo": "DECIMAL(12,2)",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 3672,
+          "distintos_pct": 91.8,
+          "chave_candidata": false
+        }
+      ]
+    },
+    {
+      "tabela": "stg_pedidos",
+      "camada": "silver",
+      "schema": "silver",
+      "linhas": 4000,
+      "colunas": [
+        {
+          "coluna": "pedido_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4000,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "cliente_pedido_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2349,
+          "distintos_pct": 58.73,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "status_pedido",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 6,
+          "distintos_pct": 0.15,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "comprado_em",
+          "tipo": "TIMESTAMP",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4000,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "aprovado_em",
+          "tipo": "TIMESTAMP",
+          "nulos": 33,
+          "nulos_pct": 0.82,
+          "distintos": 3967,
+          "distintos_pct": 99.17,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "postado_em",
+          "tipo": "TIMESTAMP",
+          "nulos": 338,
+          "nulos_pct": 8.45,
+          "distintos": 3662,
+          "distintos_pct": 91.55,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "entregue_em",
+          "tipo": "TIMESTAMP",
+          "nulos": 490,
+          "nulos_pct": 12.25,
+          "distintos": 3510,
+          "distintos_pct": 87.75,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "entrega_estimada_em",
+          "tipo": "TIMESTAMP",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 4000,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "data_compra",
+          "tipo": "DATE",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 607,
+          "distintos_pct": 15.18,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "mes_compra",
+          "tipo": "TIMESTAMP",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 20,
+          "distintos_pct": 0.5,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "foi_entregue",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.05,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "foi_cancelado",
+          "tipo": "BOOLEAN",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 2,
+          "distintos_pct": 0.05,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "dias_ate_entrega",
+          "tipo": "BIGINT",
+          "nulos": 490,
+          "nulos_pct": 12.25,
+          "distintos": 32,
+          "distintos_pct": 0.8,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "dias_de_atraso",
+          "tipo": "BIGINT",
+          "nulos": 490,
+          "nulos_pct": 12.25,
+          "distintos": 57,
+          "distintos_pct": 1.43,
+          "chave_candidata": false
+        }
+      ]
+    },
+    {
+      "tabela": "stg_produtos",
+      "camada": "silver",
+      "schema": "silver",
+      "linhas": 1000,
+      "colunas": [
+        {
+          "coluna": "produto_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 1000,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "categoria",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 10,
+          "distintos_pct": 1.0,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "categoria_en",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 10,
+          "distintos_pct": 1.0,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "peso_g",
+          "tipo": "INTEGER",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 967,
+          "distintos_pct": 96.7,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "qtd_fotos",
+          "tipo": "INTEGER",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 6,
+          "distintos_pct": 0.6,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "volume_cm3",
+          "tipo": "INTEGER",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 926,
+          "distintos_pct": 92.6,
+          "chave_candidata": false
+        }
+      ]
+    },
+    {
+      "tabela": "stg_vendedores",
+      "camada": "silver",
+      "schema": "silver",
+      "linhas": 200,
+      "colunas": [
+        {
+          "coluna": "vendedor_id",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 200,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "cep_prefixo",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 200,
+          "distintos_pct": 100.0,
+          "chave_candidata": true
+        },
+        {
+          "coluna": "cidade",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 161,
+          "distintos_pct": 80.5,
+          "chave_candidata": false
+        },
+        {
+          "coluna": "uf",
+          "tipo": "VARCHAR",
+          "nulos": 0,
+          "nulos_pct": 0.0,
+          "distintos": 10,
+          "distintos_pct": 5.0,
+          "chave_candidata": false
+        }
+      ]
+    }
+  ],
+  "historico": [
+    {
+      "gerado_em": "2026-09-17T18:03:05+00:00",
+      "status": "aprovado",
+      "testes_total": 73,
+      "testes_aprovados": 73,
+      "aprovacao_pct": 100.0,
+      "cobertura_doc_pct": 83.6,
+      "duracao_s": 2.78
+    },
+    {
+      "gerado_em": "2026-09-17T18:04:06+00:00",
+      "status": "aprovado",
+      "testes_total": 73,
+      "testes_aprovados": 73,
+      "aprovacao_pct": 100.0,
+      "cobertura_doc_pct": 100.0,
+      "duracao_s": 2.74
+    },
+    {
+      "gerado_em": "2026-09-17T18:11:32+00:00",
+      "status": "aprovado",
+      "testes_total": 75,
+      "testes_aprovados": 75,
+      "aprovacao_pct": 100.0,
+      "cobertura_doc_pct": 100.0,
+      "duracao_s": 2.85
+    },
+    {
+      "gerado_em": "2026-09-17T18:15:57+00:00",
+      "status": "aprovado",
+      "testes_total": 75,
+      "testes_aprovados": 75,
+      "aprovacao_pct": 100.0,
+      "cobertura_doc_pct": 100.0,
+      "duracao_s": 2.85
+    }
+  ]
+}

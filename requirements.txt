@@ -1,0 +1,12 @@
+# Um ambiente so para o projeto inteiro.
+#
+# As tres primeiras linhas sao o nucleo dbt + DuckDB. As tres ultimas sao o
+# dashboard em Streamlit. Elas ficam no mesmo arquivo de proposito: o Streamlit
+# Community Cloud instala o requirements.txt da raiz do repositorio, entao
+# separar em dois arquivos quebraria o deploy do app.
+dbt-duckdb==1.11.0
+duckdb==1.5.5
+
+streamlit>=1.40
+altair>=5.2
+pandas>=2.1

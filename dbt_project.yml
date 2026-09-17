@@ -1,0 +1,50 @@
+name: 'alexandria'
+version: '1.0.0'
+config-version: 2
+
+profile: 'alexandria'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# ---------------------------------------------------------------------------
+# Arquitetura em tres camadas.
+# bronze  -> dado cru, como veio da origem, carregado por scripts/carregar_bronze.py
+#            e declarado em models/bronze/_bronze__sources.yml. Nenhuma regra de
+#            negocio e nenhum modelo dbt: e a copia auditavel da origem.
+# staging -> limpeza, tipagem, deduplicacao e padronizacao de nomes (silver).
+# marts   -> tabelas de consumo, ja no vocabulario do negocio (gold).
+# ---------------------------------------------------------------------------
+models:
+  alexandria:
+    +persist_docs:
+      relation: true
+      columns: true
+    staging:
+      +schema: silver
+      +materialized: view
+      +tags: ['silver']
+    intermediate:
+      +schema: silver
+      +materialized: ephemeral
+      +tags: ['silver']
+    marts:
+      +schema: gold
+      +materialized: table
+      +tags: ['gold']
+
+vars:
+  # Data de corte do dataset publico da Olist. Metricas relativas ("ultimos 90
+  # dias") sao calculadas contra esta data, e nao contra current_date, para que
+  # o projeto continue reproduzivel daqui a alguns anos.
+  data_corte: '2018-08-31'
+  # Janela minima de recencia (em dias) para um cliente ser considerado ativo.
+  janela_ativo_dias: 180

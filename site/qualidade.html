@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alexandria · Observabilidade de Dados</title>
+<meta name="description" content="Dashboard de qualidade da camada de dados do projeto Alexandria: resultado dos testes, cobertura de governança, perfil dos dados e histórico por build.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&display=swap">
+
+<style>
+  :root {
+    --ground: #F6F8FB; --surface: #FFFFFF; --surface-alt: #EDF2F8;
+    --ink: #10233A; --ink-soft: #4C6179; --ink-faint: #7F92A6;
+    --line: #D7E0EA; --line-strong: #B9C8D8;
+    --azure: #1857B0; --azure-soft: #E4EDF9;
+    --bronze: #9C5A2B; --prata: #2F7FB5; --ouro: #A37C12;
+    --ok: #1B7A47; --ok-soft: #E3F3EA;
+    --bad: #B3261E; --bad-soft: #FBE9E7;
+    --warn: #8A5A00; --warn-soft: #FBF0DC;
+    --deep: #08182A; --deep-ink: #DCE7F2; --deep-soft: #8FA6BE; --deep-line: #1D3550;
+    --shadow: 0 1px 2px rgba(16,35,58,.06), 0 8px 24px -16px rgba(16,35,58,.22);
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #08141F; --surface: #0E1F2E; --surface-alt: #13293B;
+      --ink: #E3ECF5; --ink-soft: #A3B6C9; --ink-faint: #7A8EA3;
+      --line: #1B3245; --line-strong: #2A4762;
+      --azure: #6BA6FF; --azure-soft: #12293F;
+      --bronze: #B06E33; --prata: #3D87C4; --ouro: #AE871B;
+      --ok: #4FBE85; --ok-soft: #102A1F;
+      --bad: #F2836F; --bad-soft: #2C1715;
+      --warn: #D8A54A; --warn-soft: #2A2113;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #08141F; --surface: #0E1F2E; --surface-alt: #13293B;
+    --ink: #E3ECF5; --ink-soft: #A3B6C9; --ink-faint: #7A8EA3;
+    --line: #1B3245; --line-strong: #2A4762;
+    --azure: #6BA6FF; --azure-soft: #12293F;
+    --bronze: #B06E33; --prata: #3D87C4; --ouro: #AE871B;
+    --ok: #4FBE85; --ok-soft: #102A1F;
+    --bad: #F2836F; --bad-soft: #2C1715;
+    --warn: #D8A54A; --warn-soft: #2A2113;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { width: 100%; max-width: 1120px; margin-inline: auto; padding-inline: 20px; }
+  h1, h2 { font-family: "IBM Plex Serif", Georgia, serif; margin: 0; text-wrap: balance; }
+  h2 { font-size: 1.3rem; font-weight: 600; }
+  h3 { margin: 0; font-size: .85rem; font-weight: 600; letter-spacing: .01em; }
+  p { margin: 0; }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* topo */
+  .topbar { border-bottom: 1px solid var(--line); background: var(--surface); }
+  .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-block: 11px; flex-wrap: wrap; }
+  .topbar a { color: var(--ink-soft); text-decoration: none; font-size: .8rem; }
+  .topbar a:hover { color: var(--azure); }
+  .topbar nav { display: flex; gap: 16px; flex-wrap: wrap; }
+
+  header.hero { background: var(--deep); color: var(--deep-ink); }
+  header.hero .wrap { padding-block: 34px 30px; }
+  header.hero h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); letter-spacing: -.02em; }
+  header.hero p { color: var(--deep-soft); font-size: .93rem; max-width: 72ch; margin-top: 8px; }
+
+  /* placar */
+  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 26px; }
+  .kpi { background: rgba(255,255,255,.05); border: 1px solid var(--deep-line); border-radius: 8px; padding: 13px 15px; }
+  .kpi .rot { font-size: .7rem; color: var(--deep-soft); letter-spacing: .03em; }
+  .kpi .val { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-size: 1.5rem; font-weight: 500; color: #fff; line-height: 1.2; }
+  .kpi.status .val { display: inline-flex; align-items: center; gap: 8px; font-size: 1.2rem; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--ok); }
+  .dot.bad { background: var(--bad); }
+  .meta-linha { margin-top: 14px; font-family: "IBM Plex Mono", monospace; font-size: .72rem; color: var(--deep-soft); }
+
+  main section { padding-block: 34px; border-top: 1px solid var(--line); }
+  .cab { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  .cab p { color: var(--ink-soft); font-size: .85rem; max-width: 62ch; }
+  .eyebrow { font-family: "IBM Plex Mono", monospace; font-size: .68rem; text-transform: uppercase; letter-spacing: .14em; color: var(--ink-faint); margin-bottom: 6px; }
+
+  .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 26px; }
+  .painel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
+  .painel h3 { margin-bottom: 3px; }
+  .painel .sub { font-size: .76rem; color: var(--ink-faint); margin-bottom: 14px; }
+
+  /* barras */
+  .bars { display: flex; flex-direction: column; gap: 8px; }
+  .bar { display: grid; grid-template-columns: var(--rot, 9rem) minmax(0,1fr) 3.2rem; align-items: center; gap: 10px; }
+  .bar .name { font-family: "IBM Plex Mono", monospace; font-size: .73rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar .track { display: block; background: var(--surface-alt); border-radius: 3px; height: 13px; overflow: hidden; }
+  .bar .fill { display: block; height: 100%; border-radius: 0 4px 4px 0; background: var(--tone, var(--azure)); }
+  .bar .val { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-size: .76rem; text-align: right; color: var(--ink); }
+  .b-bronze { --tone: var(--bronze); } .b-prata { --tone: var(--prata); } .b-ouro { --tone: var(--ouro); }
+
+  /* tabelas */
+  .tabela-caixa { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+  .tabela-caixa.alta { max-height: 420px; overflow-y: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: .8rem; }
+  thead th {
+    position: sticky; top: 0; z-index: 1; background: var(--surface-alt);
+    text-align: left; font-weight: 600; font-size: .72rem; letter-spacing: .03em;
+    color: var(--ink-soft); padding: 9px 12px; white-space: nowrap;
+    border-bottom: 1px solid var(--line);
+  }
+  tbody td { padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: var(--surface-alt); }
+  td.mono, th.mono { font-family: "IBM Plex Mono", monospace; }
+  /* Nome de teste gerado pelo dbt chega a 90 caracteres; sem limite ele empurra
+     as outras colunas para fora da tela. O nome inteiro fica no title. */
+  td.corta { max-width: 32ch; overflow: hidden; text-overflow: ellipsis; }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; font-family: "IBM Plex Mono", monospace; }
+
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: .7rem; font-weight: 500; padding: 2px 9px; border-radius: 999px; }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); }
+  .pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.neutro { background: var(--surface-alt); color: var(--ink-soft); }
+
+  .medidor { display: flex; align-items: center; gap: 8px; }
+  .medidor .track { width: 68px; height: 7px; border-radius: 4px; background: var(--surface-alt); overflow: hidden; flex: none; }
+  .medidor .fill { display: block; height: 100%; background: var(--azure); }
+  .medidor .fill.cheio { background: var(--ok); }
+
+  .nota { background: var(--azure-soft); border-left: 3px solid var(--azure); border-radius: 0 var(--radius) var(--radius) 0; padding: 14px 16px; margin-top: 18px; font-size: .86rem; color: var(--ink-soft); }
+  .nota strong { color: var(--ink); font-weight: 600; }
+
+  .fonte { font-family: "IBM Plex Mono", monospace; font-size: .71rem; color: var(--ink-faint); margin-top: 16px; }
+
+  /* seletor de tabela no perfil */
+  .abas { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .abas button {
+    font-family: "IBM Plex Mono", monospace; font-size: .73rem; cursor: pointer;
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-soft);
+    border-radius: 999px; padding: 5px 12px;
+  }
+  .abas button[aria-pressed="true"] { background: var(--azure); border-color: var(--azure); color: #fff; }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; }
+
+  svg.spark { width: 100%; height: 190px; display: block; overflow: visible; }
+
+  footer { border-top: 1px solid var(--line); padding-block: 28px 40px; }
+  footer p { font-size: .8rem; color: var(--ink-faint); }
+  footer a { color: var(--azure); text-decoration: none; }
+  footer .links { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; font-size: .85rem; }
+
+  @media (max-width: 860px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .grid2 { grid-template-columns: 1fr; }
+    .bar { grid-template-columns: 7.5rem minmax(0,1fr) 3rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <a href="index.html">← <span class="mono">página do case</span></a>
+    <nav>
+      <a href="docs/">Documentação e linhagem</a>
+      <a href="https://github.com/GabiGattiRodrigues/alexandria">Repositório</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Observabilidade de Dados</h1>
+    <p>
+      Qualidade da camada de dados do <strong>Alexandria</strong>, medida a cada execução.
+      Tudo nesta tela vem dos metadados que o dbt gera sozinho — resultado dos testes,
+      cobertura de governança e perfil das tabelas. Nenhum número é digitado à mão.
+    </p>
+
+    <div class="kpis">
+      <div class="kpi status">
+        <div class="rot">Último build</div>
+        <div class="val" id="kpi-status"></div>
+      </div>
+      <div class="kpi"><div class="rot">Testes aprovados</div><div class="val" id="kpi-testes"></div></div>
+      <div class="kpi"><div class="rot">Colunas documentadas</div><div class="val" id="kpi-doc"></div></div>
+      <div class="kpi"><div class="rot">Modelos com teste de grão</div><div class="val" id="kpi-grao"></div></div>
+      <div class="kpi"><div class="rot">Duração do build</div><div class="val" id="kpi-tempo"></div></div>
+    </div>
+    <p class="meta-linha" id="meta-linha"></p>
+  </div>
+</header>
+
+<main>
+  <section class="wrap">
+    <div class="cab">
+      <div>
+        <p class="eyebrow">Testes</p>
+        <h2>O que foi verificado neste build</h2>
+      </div>
+      <p>Cada regra do projeto tem um teste que falha no momento em que ela deixa de valer. Se algum reprovar, ele aparece no topo da tabela.</p>
+    </div>
+
+    <div class="grid2">
+      <div class="painel">
+        <h3>Por camada</h3>
+        <p class="sub">A cobertura cresce em direção ao consumo — é onde o erro custa caro.</p>
+        <div class="bars" id="bars-camada"></div>
+      </div>
+      <div class="painel">
+        <h3>Por tipo</h3>
+        <p class="sub">Dos genéricos do dbt aos escritos à mão em SQL.</p>
+        <div class="bars" id="bars-tipo"></div>
+      </div>
+    </div>
+
+    <div class="tabela-caixa alta" style="margin-top: 22px">
+      <table>
+        <thead><tr>
+          <th>Teste</th><th>Tipo</th><th>Camada</th><th>Alvo</th><th>Coluna</th>
+          <th>Status</th><th style="text-align:right">Linhas violadas</th>
+        </tr></thead>
+        <tbody id="tb-testes"></tbody>
+      </table>
+    </div>
+    <p class="fonte" id="fonte-testes"></p>
+  </section>
+
+  <section class="wrap">
+    <div class="cab">
+      <div>
+        <p class="eyebrow">Cobertura de governança</p>
+        <h2>Onde estão os buracos</h2>
+      </div>
+      <p>Um modelo sem teste de grão é um modelo em que ninguém provou o que é uma linha. É a primeira coisa que um head de dados procura.</p>
+    </div>
+
+    <div class="tabela-caixa">
+      <table>
+        <thead><tr>
+          <th>Modelo</th><th>Camada</th><th>Materialização</th>
+          <th style="text-align:right">Testes</th><th>Teste de grão</th>
+          <th>Documentação das colunas</th>
+        </tr></thead>
+        <tbody id="tb-cobertura"></tbody>
+      </table>
+    </div>
+
+    <div class="nota" id="nota-cobertura"></div>
+  </section>
+
+  <section class="wrap">
+    <div class="cab">
+      <div>
+        <p class="eyebrow">Perfil dos dados</p>
+        <h2>Como as tabelas realmente estão</h2>
+      </div>
+      <p>Nulos, cardinalidade e volumetria medidos no banco, coluna a coluna. A bronze fica de fora de propósito: medir qualidade nela seria medir o fornecedor, não o projeto.</p>
+    </div>
+
+    <div class="painel">
+      <h3>Volumetria</h3>
+      <p class="sub">Linhas por tabela nas camadas silver e gold.</p>
+      <div class="bars" id="bars-volume"></div>
+    </div>
+
+    <div style="margin-top: 22px">
+      <div class="abas" id="abas-perfil"></div>
+      <div class="tabela-caixa alta">
+        <table>
+          <thead><tr>
+            <th>Coluna</th><th>Tipo</th>
+            <th style="text-align:right">Nulos</th><th style="text-align:right">% nulos</th>
+            <th style="text-align:right">Distintos</th><th>Chave candidata</th>
+          </tr></thead>
+          <tbody id="tb-perfil"></tbody>
+        </table>
+      </div>
+      <p class="fonte" id="fonte-perfil"></p>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cab">
+      <div>
+        <p class="eyebrow">Histórico</p>
+        <h2>Como isso evolui build a build</h2>
+      </div>
+      <p>Uma linha por execução, acumulada em <code>historico.jsonl</code>. É o que transforma um retrato em tendência.</p>
+    </div>
+
+    <div class="grid2">
+      <div class="painel">
+        <h3>Testes aprovados</h3>
+        <p class="sub">Percentual do total executado em cada build.</p>
+        <div id="spark-aprovacao"></div>
+      </div>
+      <div class="painel">
+        <h3>Colunas documentadas</h3>
+        <p class="sub">Percentual das colunas declaradas com descrição.</p>
+        <div id="spark-cobertura"></div>
+      </div>
+    </div>
+
+    <div class="tabela-caixa" style="margin-top: 22px">
+      <table>
+        <thead><tr>
+          <th>Build</th><th>Quando</th><th>Status</th>
+          <th style="text-align:right">Testes</th><th style="text-align:right">% aprovação</th>
+          <th style="text-align:right">% documentado</th><th style="text-align:right">Duração</th>
+        </tr></thead>
+        <tbody id="tb-historico"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="links">
+    <a href="index.html">Página do case</a>
+    <a href="docs/">Documentação e linhagem</a>
+    <a href="https://github.com/GabiGattiRodrigues/alexandria">GitHub</a>
+    <a href="https://dashboardinteligente.streamlit.app">Dashboard Inteligente</a>
+    <a href="https://www.linkedin.com/in/gabriela-gatti-rodrigues">LinkedIn</a>
+  </div>
+  <p>Gabriela Gatti Rodrigues · gerado por <code>scripts/coletar_qualidade.py</code> a partir dos artefatos do dbt.</p>
+</footer>
+
+<script>
+/* Os dados são injetados por scripts/gerar_dashboard.py, e não buscados por
+   fetch: assim a página funciona igual publicada no GitHub Pages e aberta
+   direto do disco com dois cliques. */
+const DADOS = {"gerado_em": "2026-09-17T18:15:57+00:00", "dbt_versao": "1.12.5", "build": {"status": "aprovado", "testes_total": 75, "testes_aprovados": 75, "testes_reprovados": 0, "duracao_testes_s": 5.78, "duracao_total_s": 2.85}, "por_tipo": {"not_null": 36, "unique": 16, "accepted_values": 5, "expression_is_true": 5, "relationships": 4, "accepted_range": 4, "singular": 3, "unique_combination_of_columns": 2}, "por_camada": {"bronze": 20, "silver": 26, "gold": 29}, "fontes": 9, "testes": [{"nome": "source_accepted_values_bronze_pedidos_order_status__delivered__shipped__canceled__unavailable__invoiced__processing__created__approved", "tipo": "accepted_values", "camada": "bronze", "alvo": "bronze.pedidos", "coluna": "order_status", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.139}, {"nome": "source_not_null_bronze_categoria_traducao_product_category_name", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.categoria_traducao", "coluna": "product_category_name", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.134}, {"nome": "source_not_null_bronze_clientes_customer_id", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.clientes", "coluna": "customer_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.074}, {"nome": "source_not_null_bronze_clientes_customer_unique_id", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.clientes", "coluna": "customer_unique_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.082}, {"nome": "source_not_null_bronze_pedido_avaliacoes_order_id", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.pedido_avaliacoes", "coluna": "order_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.069}, {"nome": "source_not_null_bronze_pedido_itens_order_id", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.pedido_itens", "coluna": "order_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.07}, {"nome": "source_not_null_bronze_pedido_itens_order_item_id", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.pedido_itens", "coluna": "order_item_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.067}, {"nome": "source_not_null_bronze_pedido_itens_price", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.pedido_itens", "coluna": "price", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.067}, {"nome": "source_not_null_bronze_pedido_pagamentos_order_id", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.pedido_pagamentos", "coluna": "order_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.072}, {"nome": "source_not_null_bronze_pedidos_customer_id", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.pedidos", "coluna": "customer_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.074}, {"nome": "source_not_null_bronze_pedidos_order_id", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.pedidos", "coluna": "order_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.072}, {"nome": "source_not_null_bronze_pedidos_order_purchase_timestamp", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.pedidos", "coluna": "order_purchase_timestamp", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.065}, {"nome": "source_not_null_bronze_produtos_product_id", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.produtos", "coluna": "product_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.085}, {"nome": "source_not_null_bronze_vendedores_seller_id", "tipo": "not_null", "camada": "bronze", "alvo": "bronze.vendedores", "coluna": "seller_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.068}, {"nome": "source_relationships_bronze_pedido_itens_order_id__order_id__source_bronze_pedidos_", "tipo": "relationships", "camada": "bronze", "alvo": "bronze.pedido_itens", "coluna": "order_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.087}, {"nome": "source_unique_bronze_categoria_traducao_product_category_name", "tipo": "unique", "camada": "bronze", "alvo": "bronze.categoria_traducao", "coluna": "product_category_name", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.079}, {"nome": "source_unique_bronze_clientes_customer_id", "tipo": "unique", "camada": "bronze", "alvo": "bronze.clientes", "coluna": "customer_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.079}, {"nome": "source_unique_bronze_pedidos_order_id", "tipo": "unique", "camada": "bronze", "alvo": "bronze.pedidos", "coluna": "order_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.079}, {"nome": "source_unique_bronze_produtos_product_id", "tipo": "unique", "camada": "bronze", "alvo": "bronze.produtos", "coluna": "product_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.067}, {"nome": "source_unique_bronze_vendedores_seller_id", "tipo": "unique", "camada": "bronze", "alvo": "bronze.vendedores", "coluna": "seller_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.054}, {"nome": "accepted_values_agg_clientes_rfv_r__False__1__2__3__4__5", "tipo": "accepted_values", "camada": "gold", "alvo": "agg_clientes_rfv", "coluna": "r", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.081}, {"nome": "assert_cliente_sem_pedido_futuro", "tipo": "singular", "camada": "gold", "alvo": "—", "coluna": "", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.089}, {"nome": "assert_kpis_diarios_reconciliam", "tipo": "singular", "camada": "gold", "alvo": "—", "coluna": "", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.096}, {"nome": "assert_receita_bate_entre_camadas", "tipo": "singular", "camada": "gold", "alvo": "—", "coluna": "", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.084}, {"nome": "dbt_utils_accepted_range_dim_clientes_recencia_dias__True__0", "tipo": "accepted_range", "camada": "gold", "alvo": "dim_clientes", "coluna": "recencia_dias", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.086}, {"nome": "dbt_utils_expression_is_true_agg_kpis_diarios_pedidos_pedidos_entregues", "tipo": "expression_is_true", "camada": "gold", "alvo": "agg_kpis_diarios", "coluna": "", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.097}, {"nome": "dbt_utils_expression_is_true_agg_kpis_diarios_taxa_cancelamento_between_0_and_1", "tipo": "expression_is_true", "camada": "gold", "alvo": "agg_kpis_diarios", "coluna": "", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.075}, {"nome": "dbt_utils_expression_is_true_fct_pedidos_not_foi_entregue_and_entregue_em_is_null_", "tipo": "expression_is_true", "camada": "gold", "alvo": "fct_pedidos", "coluna": "", "severidade": "error", "status": "pass", "violacoes": 0, "duracao_s": 0.091}, {"nome": "dbt_utils_expression_is_true_fct_pedidos_receita_bruta_0", "tipo": "expression_is_true", "camada": "gold", "alvo": "fct_pedidos", "coluna": "", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.074}, {"nome": "not_null_agg_clientes_rfv_cliente_id", "tipo": "not_null", "camada": "gold", "alvo": "agg_clientes_rfv", "coluna": "cliente_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.079}, {"nome": "not_null_agg_clientes_rfv_segmento_rfv", "tipo": "not_null", "camada": "gold", "alvo": "agg_clientes_rfv", "coluna": "segmento_rfv", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.064}, {"nome": "not_null_agg_kpis_diarios_data", "tipo": "not_null", "camada": "gold", "alvo": "agg_kpis_diarios", "coluna": "data", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.07}, {"nome": "not_null_agg_kpis_diarios_pedidos", "tipo": "not_null", "camada": "gold", "alvo": "agg_kpis_diarios", "coluna": "pedidos", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.067}, {"nome": "not_null_dim_clientes_cliente_id", "tipo": "not_null", "camada": "gold", "alvo": "dim_clientes", "coluna": "cliente_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.07}, {"nome": "not_null_dim_clientes_qtd_pedidos", "tipo": "not_null", "camada": "gold", "alvo": "dim_clientes", "coluna": "qtd_pedidos", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.101}, {"nome": "not_null_dim_produtos_categoria", "tipo": "not_null", "camada": "gold", "alvo": "dim_produtos", "coluna": "categoria", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.063}, {"nome": "not_null_dim_produtos_produto_id", "tipo": "not_null", "camada": "gold", "alvo": "dim_produtos", "coluna": "produto_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.089}, {"nome": "not_null_fct_pedido_itens_item_id", "tipo": "not_null", "camada": "gold", "alvo": "fct_pedido_itens", "coluna": "item_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.075}, {"nome": "not_null_fct_pedido_itens_pedido_id", "tipo": "not_null", "camada": "gold", "alvo": "fct_pedido_itens", "coluna": "pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.065}, {"nome": "not_null_fct_pedidos_pedido_id", "tipo": "not_null", "camada": "gold", "alvo": "fct_pedidos", "coluna": "pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.067}, {"nome": "not_null_fct_pedidos_receita_bruta", "tipo": "not_null", "camada": "gold", "alvo": "fct_pedidos", "coluna": "receita_bruta", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.069}, {"nome": "relationships_fct_pedido_itens_pedido_id__pedido_id__ref_fct_pedidos_", "tipo": "relationships", "camada": "gold", "alvo": "fct_pedido_itens", "coluna": "pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.066}, {"nome": "relationships_fct_pedidos_cliente_id__cliente_id__ref_dim_clientes_", "tipo": "relationships", "camada": "gold", "alvo": "fct_pedidos", "coluna": "cliente_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.072}, {"nome": "unique_agg_clientes_rfv_cliente_id", "tipo": "unique", "camada": "gold", "alvo": "agg_clientes_rfv", "coluna": "cliente_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.069}, {"nome": "unique_agg_kpis_diarios_data", "tipo": "unique", "camada": "gold", "alvo": "agg_kpis_diarios", "coluna": "data", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.038}, {"nome": "unique_dim_clientes_cliente_id", "tipo": "unique", "camada": "gold", "alvo": "dim_clientes", "coluna": "cliente_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.095}, {"nome": "unique_dim_produtos_produto_id", "tipo": "unique", "camada": "gold", "alvo": "dim_produtos", "coluna": "produto_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.075}, {"nome": "unique_fct_pedido_itens_item_id", "tipo": "unique", "camada": "gold", "alvo": "fct_pedido_itens", "coluna": "item_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.069}, {"nome": "unique_fct_pedidos_pedido_id", "tipo": "unique", "camada": "gold", "alvo": "fct_pedidos", "coluna": "pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.053}, {"nome": "accepted_values_stg_pedido_avaliacoes_nota__False__1__2__3__4__5", "tipo": "accepted_values", "camada": "silver", "alvo": "stg_pedido_avaliacoes", "coluna": "nota", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.078}, {"nome": "accepted_values_stg_pedido_pagamentos_meio_pagamento__credit_card__boleto__voucher__debit_card__not_defined", "tipo": "accepted_values", "camada": "silver", "alvo": "stg_pedido_pagamentos", "coluna": "meio_pagamento", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.073}, {"nome": "accepted_values_stg_pedidos_status_pedido__delivered__shipped__canceled__unavailable__invoiced__processing__created__approved", "tipo": "accepted_values", "camada": "silver", "alvo": "stg_pedidos", "coluna": "status_pedido", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.073}, {"nome": "dbt_utils_accepted_range_stg_pedido_itens_valor_frete__True__0", "tipo": "accepted_range", "camada": "silver", "alvo": "stg_pedido_itens", "coluna": "valor_frete", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.072}, {"nome": "dbt_utils_accepted_range_stg_pedido_itens_valor_item__False__0", "tipo": "accepted_range", "camada": "silver", "alvo": "stg_pedido_itens", "coluna": "valor_item", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.083}, {"nome": "dbt_utils_accepted_range_stg_pedido_pagamentos_valor_pago__True__0", "tipo": "accepted_range", "camada": "silver", "alvo": "stg_pedido_pagamentos", "coluna": "valor_pago", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.088}, {"nome": "dbt_utils_expression_is_true_stg_pedidos_entregue_em_is_null_or_entregue_em_comprado_em", "tipo": "expression_is_true", "camada": "silver", "alvo": "stg_pedidos", "coluna": "", "severidade": "error", "status": "pass", "violacoes": 0, "duracao_s": 0.074}, {"nome": "dbt_utils_unique_combination_of_columns_stg_pedido_itens_pedido_id__item_sequencial", "tipo": "unique_combination_of_columns", "camada": "silver", "alvo": "stg_pedido_itens", "coluna": "", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.091}, {"nome": "dbt_utils_unique_combination_of_columns_stg_pedido_pagamentos_pedido_id__pagamento_sequencial", "tipo": "unique_combination_of_columns", "camada": "silver", "alvo": "stg_pedido_pagamentos", "coluna": "", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.074}, {"nome": "not_null_stg_clientes_cliente_id", "tipo": "not_null", "camada": "silver", "alvo": "stg_clientes", "coluna": "cliente_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.059}, {"nome": "not_null_stg_clientes_cliente_pedido_id", "tipo": "not_null", "camada": "silver", "alvo": "stg_clientes", "coluna": "cliente_pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.06}, {"nome": "not_null_stg_pedido_avaliacoes_pedido_id", "tipo": "not_null", "camada": "silver", "alvo": "stg_pedido_avaliacoes", "coluna": "pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.103}, {"nome": "not_null_stg_pedido_itens_pedido_id", "tipo": "not_null", "camada": "silver", "alvo": "stg_pedido_itens", "coluna": "pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.063}, {"nome": "not_null_stg_pedido_pagamentos_pedido_id", "tipo": "not_null", "camada": "silver", "alvo": "stg_pedido_pagamentos", "coluna": "pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.076}, {"nome": "not_null_stg_pedidos_cliente_pedido_id", "tipo": "not_null", "camada": "silver", "alvo": "stg_pedidos", "coluna": "cliente_pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.087}, {"nome": "not_null_stg_pedidos_data_compra", "tipo": "not_null", "camada": "silver", "alvo": "stg_pedidos", "coluna": "data_compra", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.086}, {"nome": "not_null_stg_pedidos_pedido_id", "tipo": "not_null", "camada": "silver", "alvo": "stg_pedidos", "coluna": "pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.088}, {"nome": "not_null_stg_produtos_categoria", "tipo": "not_null", "camada": "silver", "alvo": "stg_produtos", "coluna": "categoria", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.078}, {"nome": "not_null_stg_produtos_produto_id", "tipo": "not_null", "camada": "silver", "alvo": "stg_produtos", "coluna": "produto_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.059}, {"nome": "not_null_stg_vendedores_vendedor_id", "tipo": "not_null", "camada": "silver", "alvo": "stg_vendedores", "coluna": "vendedor_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.06}, {"nome": "relationships_stg_pedido_itens_pedido_id__pedido_id__ref_stg_pedidos_", "tipo": "relationships", "camada": "silver", "alvo": "stg_pedido_itens", "coluna": "pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.089}, {"nome": "unique_stg_clientes_cliente_pedido_id", "tipo": "unique", "camada": "silver", "alvo": "stg_clientes", "coluna": "cliente_pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.091}, {"nome": "unique_stg_pedido_avaliacoes_pedido_id", "tipo": "unique", "camada": "silver", "alvo": "stg_pedido_avaliacoes", "coluna": "pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.086}, {"nome": "unique_stg_pedidos_pedido_id", "tipo": "unique", "camada": "silver", "alvo": "stg_pedidos", "coluna": "pedido_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.087}, {"nome": "unique_stg_produtos_produto_id", "tipo": "unique", "camada": "silver", "alvo": "stg_produtos", "coluna": "produto_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.068}, {"nome": "unique_stg_vendedores_vendedor_id", "tipo": "unique", "camada": "silver", "alvo": "stg_vendedores", "coluna": "vendedor_id", "severidade": "ERROR", "status": "pass", "violacoes": 0, "duracao_s": 0.066}], "cobertura": [{"nome": "agg_clientes_rfv", "camada": "gold", "materializacao": "table", "descrito": true, "colunas_declaradas": 5, "colunas_documentadas": 5, "colunas_testadas": 3, "testes": 4, "tem_teste_de_grao": true}, {"nome": "agg_kpis_diarios", "camada": "gold", "materializacao": "table", "descrito": true, "colunas_declaradas": 8, "colunas_documentadas": 8, "colunas_testadas": 2, "testes": 6, "tem_teste_de_grao": true}, {"nome": "dim_clientes", "camada": "gold", "materializacao": "table", "descrito": true, "colunas_declaradas": 6, "colunas_documentadas": 6, "colunas_testadas": 3, "testes": 6, "tem_teste_de_grao": true}, {"nome": "dim_produtos", "camada": "gold", "materializacao": "table", "descrito": true, "colunas_declaradas": 3, "colunas_documentadas": 3, "colunas_testadas": 2, "testes": 3, "tem_teste_de_grao": true}, {"nome": "fct_pedido_itens", "camada": "gold", "materializacao": "table", "descrito": true, "colunas_declaradas": 4, "colunas_documentadas": 4, "colunas_testadas": 2, "testes": 4, "tem_teste_de_grao": true}, {"nome": "fct_pedidos", "camada": "gold", "materializacao": "table", "descrito": true, "colunas_declaradas": 6, "colunas_documentadas": 6, "colunas_testadas": 3, "testes": 9, "tem_teste_de_grao": true}, {"nome": "int_pedido_itens_agregado", "camada": "silver", "materializacao": "ephemeral", "descrito": true, "colunas_declaradas": 2, "colunas_documentadas": 2, "colunas_testadas": 0, "testes": 0, "tem_teste_de_grao": false}, {"nome": "int_pedido_pagamentos_agregado", "camada": "silver", "materializacao": "ephemeral", "descrito": true, "colunas_declaradas": 2, "colunas_documentadas": 2, "colunas_testadas": 0, "testes": 0, "tem_teste_de_grao": false}, {"nome": "stg_clientes", "camada": "silver", "materializacao": "view", "descrito": true, "colunas_declaradas": 3, "colunas_documentadas": 3, "colunas_testadas": 2, "testes": 3, "tem_teste_de_grao": true}, {"nome": "stg_pedido_avaliacoes", "camada": "silver", "materializacao": "view", "descrito": true, "colunas_declaradas": 4, "colunas_documentadas": 4, "colunas_testadas": 2, "testes": 3, "tem_teste_de_grao": true}, {"nome": "stg_pedido_itens", "camada": "silver", "materializacao": "view", "descrito": true, "colunas_declaradas": 4, "colunas_documentadas": 4, "colunas_testadas": 3, "testes": 6, "tem_teste_de_grao": true}, {"nome": "stg_pedido_pagamentos", "camada": "silver", "materializacao": "view", "descrito": true, "colunas_declaradas": 3, "colunas_documentadas": 3, "colunas_testadas": 3, "testes": 4, "tem_teste_de_grao": true}, {"nome": "stg_pedidos", "camada": "silver", "materializacao": "view", "descrito": true, "colunas_declaradas": 6, "colunas_documentadas": 6, "colunas_testadas": 4, "testes": 7, "tem_teste_de_grao": true}, {"nome": "stg_produtos", "camada": "silver", "materializacao": "view", "descrito": true, "colunas_declaradas": 2, "colunas_documentadas": 2, "colunas_testadas": 2, "testes": 3, "tem_teste_de_grao": true}, {"nome": "stg_vendedores", "camada": "silver", "materializacao": "view", "descrito": true, "colunas_declaradas": 1, "colunas_documentadas": 1, "colunas_testadas": 1, "testes": 2, "tem_teste_de_grao": true}], "resumo_cobertura": {"colunas_fisicas": 156, "modelos": 15, "modelos_descritos": 15, "modelos_com_teste_de_grao": 13, "modelos_sem_teste": 2, "colunas_declaradas": 59, "colunas_documentadas": 59, "colunas_testadas": 32}, "perfil": [{"tabela": "agg_clientes_rfv", "camada": "gold", "schema": "gold", "linhas": 2349, "colunas": [{"coluna": "cliente_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 2349, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "primeira_compra", "tipo": "DATE", "nulos": 0, "nulos_pct": 0.0, "distintos": 587, "distintos_pct": 24.99, "chave_candidata": false}, {"coluna": "ultima_compra", "tipo": "DATE", "nulos": 0, "nulos_pct": 0.0, "distintos": 582, "distintos_pct": 24.78, "chave_candidata": false}, {"coluna": "qtd_pedidos", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 7, "distintos_pct": 0.3, "chave_candidata": false}, {"coluna": "qtd_pedidos_entregues", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 6, "distintos_pct": 0.26, "chave_candidata": false}, {"coluna": "receita_total", "tipo": "DECIMAL(38,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 2282, "distintos_pct": 97.15, "chave_candidata": false}, {"coluna": "ticket_medio", "tipo": "DOUBLE", "nulos": 0, "nulos_pct": 0.0, "distintos": 2287, "distintos_pct": 97.36, "chave_candidata": false}, {"coluna": "nota_media", "tipo": "DOUBLE", "nulos": 352, "nulos_pct": 14.99, "distintos": 25, "distintos_pct": 1.06, "chave_candidata": false}, {"coluna": "uf", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 10, "distintos_pct": 0.43, "chave_candidata": false}, {"coluna": "cidade", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 400, "distintos_pct": 17.03, "chave_candidata": false}, {"coluna": "meio_pagamento_recente", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 4, "distintos_pct": 0.17, "chave_candidata": false}, {"coluna": "recencia_dias", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 582, "distintos_pct": 24.78, "chave_candidata": false}, {"coluna": "tempo_de_vida_dias", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 478, "distintos_pct": 20.35, "chave_candidata": false}, {"coluna": "e_recorrente", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.09, "chave_candidata": false}, {"coluna": "esta_ativo", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.09, "chave_candidata": false}, {"coluna": "r", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 5, "distintos_pct": 0.21, "chave_candidata": false}, {"coluna": "f", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 5, "distintos_pct": 0.21, "chave_candidata": false}, {"coluna": "v", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 5, "distintos_pct": 0.21, "chave_candidata": false}, {"coluna": "rfv", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 78, "distintos_pct": 3.32, "chave_candidata": false}, {"coluna": "score_rfv", "tipo": "DOUBLE", "nulos": 0, "nulos_pct": 0.0, "distintos": 13, "distintos_pct": 0.55, "chave_candidata": false}, {"coluna": "segmento_rfv", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 8, "distintos_pct": 0.34, "chave_candidata": false}]}, {"tabela": "agg_kpis_diarios", "camada": "gold", "schema": "gold", "linhas": 607, "colunas": [{"coluna": "data", "tipo": "DATE", "nulos": 0, "nulos_pct": 0.0, "distintos": 607, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "mes", "tipo": "TIMESTAMP", "nulos": 0, "nulos_pct": 0.0, "distintos": 20, "distintos_pct": 3.29, "chave_candidata": false}, {"coluna": "pedidos", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 15, "distintos_pct": 2.47, "chave_candidata": false}, {"coluna": "pedidos_entregues", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 14, "distintos_pct": 2.31, "chave_candidata": false}, {"coluna": "pedidos_cancelados", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 3, "distintos_pct": 0.49, "chave_candidata": false}, {"coluna": "clientes", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 15, "distintos_pct": 2.47, "chave_candidata": false}, {"coluna": "receita_bruta", "tipo": "DECIMAL(38,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 606, "distintos_pct": 99.84, "chave_candidata": false}, {"coluna": "receita_itens", "tipo": "DECIMAL(38,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 606, "distintos_pct": 99.84, "chave_candidata": false}, {"coluna": "receita_frete", "tipo": "DECIMAL(38,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 603, "distintos_pct": 99.34, "chave_candidata": false}, {"coluna": "ticket_medio", "tipo": "DOUBLE", "nulos": 0, "nulos_pct": 0.0, "distintos": 607, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "itens", "tipo": "HUGEINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 21, "distintos_pct": 3.46, "chave_candidata": false}, {"coluna": "nota_media", "tipo": "DOUBLE", "nulos": 2, "nulos_pct": 0.33, "distintos": 72, "distintos_pct": 11.86, "chave_candidata": false}, {"coluna": "taxa_detratores", "tipo": "DOUBLE", "nulos": 2, "nulos_pct": 0.33, "distintos": 26, "distintos_pct": 4.28, "chave_candidata": false}, {"coluna": "prazo_medio_entrega_dias", "tipo": "DOUBLE", "nulos": 1, "nulos_pct": 0.16, "distintos": 263, "distintos_pct": 43.33, "chave_candidata": false}, {"coluna": "taxa_atraso", "tipo": "DOUBLE", "nulos": 1, "nulos_pct": 0.16, "distintos": 38, "distintos_pct": 6.26, "chave_candidata": false}, {"coluna": "taxa_cancelamento", "tipo": "DOUBLE", "nulos": 0, "nulos_pct": 0.0, "distintos": 19, "distintos_pct": 3.13, "chave_candidata": false}]}, {"tabela": "dim_clientes", "camada": "gold", "schema": "gold", "linhas": 2349, "colunas": [{"coluna": "cliente_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 2349, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "primeira_compra", "tipo": "DATE", "nulos": 0, "nulos_pct": 0.0, "distintos": 587, "distintos_pct": 24.99, "chave_candidata": false}, {"coluna": "ultima_compra", "tipo": "DATE", "nulos": 0, "nulos_pct": 0.0, "distintos": 582, "distintos_pct": 24.78, "chave_candidata": false}, {"coluna": "qtd_pedidos", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 7, "distintos_pct": 0.3, "chave_candidata": false}, {"coluna": "qtd_pedidos_entregues", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 6, "distintos_pct": 0.26, "chave_candidata": false}, {"coluna": "receita_total", "tipo": "DECIMAL(38,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 2282, "distintos_pct": 97.15, "chave_candidata": false}, {"coluna": "ticket_medio", "tipo": "DOUBLE", "nulos": 0, "nulos_pct": 0.0, "distintos": 2287, "distintos_pct": 97.36, "chave_candidata": false}, {"coluna": "nota_media", "tipo": "DOUBLE", "nulos": 352, "nulos_pct": 14.99, "distintos": 25, "distintos_pct": 1.06, "chave_candidata": false}, {"coluna": "uf", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 10, "distintos_pct": 0.43, "chave_candidata": false}, {"coluna": "cidade", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 400, "distintos_pct": 17.03, "chave_candidata": false}, {"coluna": "meio_pagamento_recente", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 4, "distintos_pct": 0.17, "chave_candidata": false}, {"coluna": "recencia_dias", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 582, "distintos_pct": 24.78, "chave_candidata": false}, {"coluna": "tempo_de_vida_dias", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 478, "distintos_pct": 20.35, "chave_candidata": false}, {"coluna": "e_recorrente", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.09, "chave_candidata": false}, {"coluna": "esta_ativo", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.09, "chave_candidata": false}]}, {"tabela": "dim_produtos", "camada": "gold", "schema": "gold", "linhas": 1000, "colunas": [{"coluna": "produto_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 1000, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "categoria", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 10, "distintos_pct": 1.0, "chave_candidata": false}, {"coluna": "categoria_en", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 10, "distintos_pct": 1.0, "chave_candidata": false}, {"coluna": "peso_g", "tipo": "INTEGER", "nulos": 0, "nulos_pct": 0.0, "distintos": 967, "distintos_pct": 96.7, "chave_candidata": false}, {"coluna": "qtd_fotos", "tipo": "INTEGER", "nulos": 0, "nulos_pct": 0.0, "distintos": 6, "distintos_pct": 0.6, "chave_candidata": false}, {"coluna": "volume_cm3", "tipo": "INTEGER", "nulos": 0, "nulos_pct": 0.0, "distintos": 926, "distintos_pct": 92.6, "chave_candidata": false}, {"coluna": "qtd_itens_vendidos", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 14, "distintos_pct": 1.4, "chave_candidata": false}, {"coluna": "qtd_pedidos", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 14, "distintos_pct": 1.4, "chave_candidata": false}, {"coluna": "receita_total", "tipo": "DECIMAL(38,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 992, "distintos_pct": 99.2, "chave_candidata": false}, {"coluna": "preco_medio", "tipo": "DOUBLE", "nulos": 4, "nulos_pct": 0.4, "distintos": 994, "distintos_pct": 99.4, "chave_candidata": false}, {"coluna": "primeira_venda", "tipo": "DATE", "nulos": 4, "nulos_pct": 0.4, "distintos": 315, "distintos_pct": 31.5, "chave_candidata": false}, {"coluna": "ultima_venda", "tipo": "DATE", "nulos": 4, "nulos_pct": 0.4, "distintos": 297, "distintos_pct": 29.7, "chave_candidata": false}, {"coluna": "nunca_vendido", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.2, "chave_candidata": false}]}, {"tabela": "fct_pedido_itens", "camada": "gold", "schema": "gold", "linhas": 5192, "colunas": [{"coluna": "pedido_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 4000, "distintos_pct": 77.04, "chave_candidata": false}, {"coluna": "item_sequencial", "tipo": "INTEGER", "nulos": 0, "nulos_pct": 0.0, "distintos": 4, "distintos_pct": 0.08, "chave_candidata": false}, {"coluna": "item_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 5192, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "produto_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 996, "distintos_pct": 19.18, "chave_candidata": false}, {"coluna": "vendedor_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 200, "distintos_pct": 3.85, "chave_candidata": false}, {"coluna": "categoria", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 10, "distintos_pct": 0.19, "chave_candidata": false}, {"coluna": "categoria_en", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 10, "distintos_pct": 0.19, "chave_candidata": false}, {"coluna": "vendedor_uf", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 10, "distintos_pct": 0.19, "chave_candidata": false}, {"coluna": "data_compra", "tipo": "DATE", "nulos": 0, "nulos_pct": 0.0, "distintos": 607, "distintos_pct": 11.69, "chave_candidata": false}, {"coluna": "mes_compra", "tipo": "TIMESTAMP", "nulos": 0, "nulos_pct": 0.0, "distintos": 20, "distintos_pct": 0.39, "chave_candidata": false}, {"coluna": "status_pedido", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 6, "distintos_pct": 0.12, "chave_candidata": false}, {"coluna": "foi_entregue", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.04, "chave_candidata": false}, {"coluna": "valor_item", "tipo": "DECIMAL(12,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 4387, "distintos_pct": 84.5, "chave_candidata": false}, {"coluna": "valor_frete", "tipo": "DECIMAL(12,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 2692, "distintos_pct": 51.85, "chave_candidata": false}, {"coluna": "receita_bruta", "tipo": "DECIMAL(13,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 4507, "distintos_pct": 86.81, "chave_candidata": false}]}, {"tabela": "fct_pedidos", "camada": "gold", "schema": "gold", "linhas": 4000, "colunas": [{"coluna": "pedido_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 4000, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "cliente_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 2349, "distintos_pct": 58.73, "chave_candidata": false}, {"coluna": "cliente_pedido_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 2349, "distintos_pct": 58.73, "chave_candidata": false}, {"coluna": "cliente_uf", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 10, "distintos_pct": 0.25, "chave_candidata": false}, {"coluna": "cliente_cidade", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 400, "distintos_pct": 10.0, "chave_candidata": false}, {"coluna": "status_pedido", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 6, "distintos_pct": 0.15, "chave_candidata": false}, {"coluna": "foi_entregue", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.05, "chave_candidata": false}, {"coluna": "foi_cancelado", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.05, "chave_candidata": false}, {"coluna": "data_compra", "tipo": "DATE", "nulos": 0, "nulos_pct": 0.0, "distintos": 607, "distintos_pct": 15.18, "chave_candidata": false}, {"coluna": "mes_compra", "tipo": "TIMESTAMP", "nulos": 0, "nulos_pct": 0.0, "distintos": 20, "distintos_pct": 0.5, "chave_candidata": false}, {"coluna": "comprado_em", "tipo": "TIMESTAMP", "nulos": 0, "nulos_pct": 0.0, "distintos": 4000, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "entregue_em", "tipo": "TIMESTAMP", "nulos": 490, "nulos_pct": 12.25, "distintos": 3510, "distintos_pct": 87.75, "chave_candidata": false}, {"coluna": "entrega_estimada_em", "tipo": "TIMESTAMP", "nulos": 0, "nulos_pct": 0.0, "distintos": 4000, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "dias_ate_entrega", "tipo": "BIGINT", "nulos": 490, "nulos_pct": 12.25, "distintos": 32, "distintos_pct": 0.8, "chave_candidata": false}, {"coluna": "dias_de_atraso", "tipo": "BIGINT", "nulos": 490, "nulos_pct": 12.25, "distintos": 57, "distintos_pct": 1.43, "chave_candidata": false}, {"coluna": "entrega_atrasada", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.05, "chave_candidata": false}, {"coluna": "qtd_itens", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 4, "distintos_pct": 0.1, "chave_candidata": false}, {"coluna": "qtd_produtos_distintos", "tipo": "BIGINT", "nulos": 0, "nulos_pct": 0.0, "distintos": 4, "distintos_pct": 0.1, "chave_candidata": false}, {"coluna": "valor_itens", "tipo": "DECIMAL(38,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 3604, "distintos_pct": 90.1, "chave_candidata": false}, {"coluna": "valor_frete", "tipo": "DECIMAL(38,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 2597, "distintos_pct": 64.92, "chave_candidata": false}, {"coluna": "receita_bruta", "tipo": "DECIMAL(38,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 3672, "distintos_pct": 91.8, "chave_candidata": false}, {"coluna": "valor_pago", "tipo": "DECIMAL(38,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 3672, "distintos_pct": 91.8, "chave_candidata": false}, {"coluna": "qtd_parcelas", "tipo": "INTEGER", "nulos": 0, "nulos_pct": 0.0, "distintos": 6, "distintos_pct": 0.15, "chave_candidata": false}, {"coluna": "meio_pagamento_principal", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 4, "distintos_pct": 0.1, "chave_candidata": false}, {"coluna": "nota_avaliacao", "tipo": "INTEGER", "nulos": 1025, "nulos_pct": 25.62, "distintos": 5, "distintos_pct": 0.12, "chave_candidata": false}, {"coluna": "promotor", "tipo": "BOOLEAN", "nulos": 1025, "nulos_pct": 25.62, "distintos": 2, "distintos_pct": 0.05, "chave_candidata": false}, {"coluna": "detrator", "tipo": "BOOLEAN", "nulos": 1025, "nulos_pct": 25.62, "distintos": 2, "distintos_pct": 0.05, "chave_candidata": false}]}, {"tabela": "stg_clientes", "camada": "silver", "schema": "silver", "linhas": 3400, "colunas": [{"coluna": "cliente_pedido_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 3400, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "cliente_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 3400, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "cep_prefixo", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 3332, "distintos_pct": 98.0, "chave_candidata": false}, {"coluna": "cidade", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 400, "distintos_pct": 11.76, "chave_candidata": false}, {"coluna": "uf", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 10, "distintos_pct": 0.29, "chave_candidata": false}]}, {"tabela": "stg_pedido_avaliacoes", "camada": "silver", "schema": "silver", "linhas": 2975, "colunas": [{"coluna": "avaliacao_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 2975, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "pedido_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 2975, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "nota", "tipo": "INTEGER", "nulos": 0, "nulos_pct": 0.0, "distintos": 5, "distintos_pct": 0.17, "chave_candidata": false}, {"coluna": "avaliada_em", "tipo": "TIMESTAMP", "nulos": 0, "nulos_pct": 0.0, "distintos": 609, "distintos_pct": 20.47, "chave_candidata": false}, {"coluna": "respondida_em", "tipo": "TIMESTAMP", "nulos": 0, "nulos_pct": 0.0, "distintos": 2975, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "promotor", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.07, "chave_candidata": false}, {"coluna": "detrator", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.07, "chave_candidata": false}]}, {"tabela": "stg_pedido_itens", "camada": "silver", "schema": "silver", "linhas": 5192, "colunas": [{"coluna": "pedido_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 4000, "distintos_pct": 77.04, "chave_candidata": false}, {"coluna": "item_sequencial", "tipo": "INTEGER", "nulos": 0, "nulos_pct": 0.0, "distintos": 4, "distintos_pct": 0.08, "chave_candidata": false}, {"coluna": "produto_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 996, "distintos_pct": 19.18, "chave_candidata": false}, {"coluna": "vendedor_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 200, "distintos_pct": 3.85, "chave_candidata": false}, {"coluna": "limite_postagem_em", "tipo": "TIMESTAMP", "nulos": 0, "nulos_pct": 0.0, "distintos": 4000, "distintos_pct": 77.04, "chave_candidata": false}, {"coluna": "valor_item", "tipo": "DECIMAL(12,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 4387, "distintos_pct": 84.5, "chave_candidata": false}, {"coluna": "valor_frete", "tipo": "DECIMAL(12,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 2692, "distintos_pct": 51.85, "chave_candidata": false}, {"coluna": "receita_bruta", "tipo": "DECIMAL(13,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 4507, "distintos_pct": 86.81, "chave_candidata": false}]}, {"tabela": "stg_pedido_pagamentos", "camada": "silver", "schema": "silver", "linhas": 4000, "colunas": [{"coluna": "pedido_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 4000, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "pagamento_sequencial", "tipo": "INTEGER", "nulos": 0, "nulos_pct": 0.0, "distintos": 1, "distintos_pct": 0.03, "chave_candidata": false}, {"coluna": "meio_pagamento", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 4, "distintos_pct": 0.1, "chave_candidata": false}, {"coluna": "qtd_parcelas", "tipo": "INTEGER", "nulos": 0, "nulos_pct": 0.0, "distintos": 6, "distintos_pct": 0.15, "chave_candidata": false}, {"coluna": "valor_pago", "tipo": "DECIMAL(12,2)", "nulos": 0, "nulos_pct": 0.0, "distintos": 3672, "distintos_pct": 91.8, "chave_candidata": false}]}, {"tabela": "stg_pedidos", "camada": "silver", "schema": "silver", "linhas": 4000, "colunas": [{"coluna": "pedido_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 4000, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "cliente_pedido_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 2349, "distintos_pct": 58.73, "chave_candidata": false}, {"coluna": "status_pedido", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 6, "distintos_pct": 0.15, "chave_candidata": false}, {"coluna": "comprado_em", "tipo": "TIMESTAMP", "nulos": 0, "nulos_pct": 0.0, "distintos": 4000, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "aprovado_em", "tipo": "TIMESTAMP", "nulos": 33, "nulos_pct": 0.82, "distintos": 3967, "distintos_pct": 99.17, "chave_candidata": false}, {"coluna": "postado_em", "tipo": "TIMESTAMP", "nulos": 338, "nulos_pct": 8.45, "distintos": 3662, "distintos_pct": 91.55, "chave_candidata": false}, {"coluna": "entregue_em", "tipo": "TIMESTAMP", "nulos": 490, "nulos_pct": 12.25, "distintos": 3510, "distintos_pct": 87.75, "chave_candidata": false}, {"coluna": "entrega_estimada_em", "tipo": "TIMESTAMP", "nulos": 0, "nulos_pct": 0.0, "distintos": 4000, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "data_compra", "tipo": "DATE", "nulos": 0, "nulos_pct": 0.0, "distintos": 607, "distintos_pct": 15.18, "chave_candidata": false}, {"coluna": "mes_compra", "tipo": "TIMESTAMP", "nulos": 0, "nulos_pct": 0.0, "distintos": 20, "distintos_pct": 0.5, "chave_candidata": false}, {"coluna": "foi_entregue", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.05, "chave_candidata": false}, {"coluna": "foi_cancelado", "tipo": "BOOLEAN", "nulos": 0, "nulos_pct": 0.0, "distintos": 2, "distintos_pct": 0.05, "chave_candidata": false}, {"coluna": "dias_ate_entrega", "tipo": "BIGINT", "nulos": 490, "nulos_pct": 12.25, "distintos": 32, "distintos_pct": 0.8, "chave_candidata": false}, {"coluna": "dias_de_atraso", "tipo": "BIGINT", "nulos": 490, "nulos_pct": 12.25, "distintos": 57, "distintos_pct": 1.43, "chave_candidata": false}]}, {"tabela": "stg_produtos", "camada": "silver", "schema": "silver", "linhas": 1000, "colunas": [{"coluna": "produto_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 1000, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "categoria", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 10, "distintos_pct": 1.0, "chave_candidata": false}, {"coluna": "categoria_en", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 10, "distintos_pct": 1.0, "chave_candidata": false}, {"coluna": "peso_g", "tipo": "INTEGER", "nulos": 0, "nulos_pct": 0.0, "distintos": 967, "distintos_pct": 96.7, "chave_candidata": false}, {"coluna": "qtd_fotos", "tipo": "INTEGER", "nulos": 0, "nulos_pct": 0.0, "distintos": 6, "distintos_pct": 0.6, "chave_candidata": false}, {"coluna": "volume_cm3", "tipo": "INTEGER", "nulos": 0, "nulos_pct": 0.0, "distintos": 926, "distintos_pct": 92.6, "chave_candidata": false}]}, {"tabela": "stg_vendedores", "camada": "silver", "schema": "silver", "linhas": 200, "colunas": [{"coluna": "vendedor_id", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 200, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "cep_prefixo", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 200, "distintos_pct": 100.0, "chave_candidata": true}, {"coluna": "cidade", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 161, "distintos_pct": 80.5, "chave_candidata": false}, {"coluna": "uf", "tipo": "VARCHAR", "nulos": 0, "nulos_pct": 0.0, "distintos": 10, "distintos_pct": 5.0, "chave_candidata": false}]}], "historico": [{"gerado_em": "2026-09-17T18:03:05+00:00", "status": "aprovado", "testes_total": 73, "testes_aprovados": 73, "aprovacao_pct": 100.0, "cobertura_doc_pct": 83.6, "duracao_s": 2.78}, {"gerado_em": "2026-09-17T18:04:06+00:00", "status": "aprovado", "testes_total": 73, "testes_aprovados": 73, "aprovacao_pct": 100.0, "cobertura_doc_pct": 100.0, "duracao_s": 2.74}, {"gerado_em": "2026-09-17T18:11:32+00:00", "status": "aprovado", "testes_total": 75, "testes_aprovados": 75, "aprovacao_pct": 100.0, "cobertura_doc_pct": 100.0, "duracao_s": 2.85}, {"gerado_em": "2026-09-17T18:15:57+00:00", "status": "aprovado", "testes_total": 75, "testes_aprovados": 75, "aprovacao_pct": 100.0, "cobertura_doc_pct": 100.0, "duracao_s": 2.85}]};
+
+(function () {
+  if (!DADOS) { document.body.innerHTML = '<p style="padding:40px">Dados não injetados.</p>'; return; }
+
+  const CAMADAS = { bronze: 'b-bronze', silver: 'b-prata', gold: 'b-ouro', outros: '' };
+  const n = (v) => (v ?? 0).toLocaleString('pt-BR');
+  const el = (id) => document.getElementById(id);
+
+  function quando(iso) {
+    const d = new Date(iso);
+    return isNaN(d) ? (iso || '—')
+      : d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+        + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function barras(destino, itens, rotuloLargura) {
+    const alvo = el(destino);
+    if (!alvo) return;
+    alvo.textContent = '';
+    const max = Math.max(...itens.map((i) => i.valor), 1);
+    itens.forEach((item) => {
+      const linha = document.createElement('div');
+      linha.className = 'bar' + (item.classe ? ' ' + item.classe : '');
+      if (rotuloLargura) linha.style.setProperty('--rot', rotuloLargura);
+      linha.title = item.nome + ': ' + n(item.valor);
+      linha.innerHTML =
+        '<span class="name"></span><span class="track"><span class="fill"></span></span>' +
+        '<span class="val"></span>';
+      linha.querySelector('.name').textContent = item.nome;
+      linha.querySelector('.val').textContent = n(item.valor);
+      linha.querySelector('.fill').style.width =
+        Math.max(2, Math.round((item.valor / max) * 100)) + '%';
+      alvo.appendChild(linha);
+    });
+  }
+
+  /* ---- placar ---------------------------------------------------------- */
+  const b = DADOS.build, rc = DADOS.resumo_cobertura;
+  const aprovado = b.status === 'aprovado';
+
+  el('kpi-status').innerHTML =
+    '<span class="dot' + (aprovado ? '' : ' bad') + '"></span>' + (aprovado ? 'aprovado' : 'reprovado');
+  el('kpi-testes').textContent = b.testes_aprovados + '/' + b.testes_total;
+  el('kpi-doc').textContent = rc.colunas_documentadas + '/' + rc.colunas_declaradas;
+  el('kpi-grao').textContent = rc.modelos_com_teste_de_grao + '/' + rc.modelos;
+  el('kpi-tempo').textContent = b.duracao_total_s + 's';
+  el('meta-linha').textContent =
+    'dbt ' + (DADOS.dbt_versao || '—') + ' · coletado em ' + quando(DADOS.gerado_em) +
+    ' · ' + DADOS.fontes + ' tabelas de origem · ' + rc.modelos + ' modelos';
+
+  /* ---- testes ---------------------------------------------------------- */
+  const ordemCamada = ['bronze', 'silver', 'gold', 'outros'];
+  barras('bars-camada', ordemCamada
+    .filter((c) => DADOS.por_camada[c])
+    .map((c) => ({ nome: c, valor: DADOS.por_camada[c], classe: CAMADAS[c] })), '6rem');
+
+  barras('bars-tipo', Object.entries(DADOS.por_tipo)
+    .sort((a, c) => c[1] - a[1])
+    .map(([nome, valor]) => ({ nome, valor })), '10rem');
+
+  const corpoTestes = el('tb-testes');
+  DADOS.testes.forEach((t) => {
+    const ok = t.status === 'pass';
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td class="mono corta"></td><td class="mono"></td><td></td><td class="mono corta"></td>' +
+      '<td class="mono"></td><td></td><td class="n"></td>';
+    const td = tr.children;
+    td[0].textContent = t.nome;
+    td[0].title = t.nome;
+    td[3].title = t.alvo;
+    td[1].textContent = t.tipo;
+    td[2].textContent = t.camada;
+    td[3].textContent = t.alvo;
+    td[4].textContent = t.coluna || '—';
+    td[5].innerHTML = '<span class="pill ' + (ok ? 'ok' : 'bad') + '">' +
+      (ok ? 'passou' : t.status) + '</span>';
+    td[6].textContent = ok ? '0' : n(t.violacoes);
+    corpoTestes.appendChild(tr);
+  });
+  el('fonte-testes').textContent =
+    DADOS.testes.length + ' testes nesta execução · fonte: target/run_results.json';
+
+  /* ---- cobertura ------------------------------------------------------- */
+  const corpoCob = el('tb-cobertura');
+  DADOS.cobertura.forEach((m) => {
+    const pct = m.colunas_declaradas
+      ? Math.round((100 * m.colunas_documentadas) / m.colunas_declaradas) : 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td class="mono"></td><td></td><td class="mono"></td><td class="n"></td><td></td><td></td>';
+    const td = tr.children;
+    td[0].textContent = m.nome;
+    td[1].textContent = m.camada;
+    td[2].textContent = m.materializacao;
+    td[3].textContent = m.testes;
+    td[4].innerHTML = m.tem_teste_de_grao
+      ? '<span class="pill ok">sim</span>'
+      : '<span class="pill ' + (m.materializacao === 'ephemeral' ? 'neutro' : 'warn') + '">não</span>';
+    td[5].innerHTML =
+      '<span class="medidor"><span class="track"><span class="fill' +
+      (pct === 100 ? ' cheio' : '') + '" style="width:' + pct + '%"></span></span>' +
+      '<span class="num" style="font-size:.74rem">' +
+      m.colunas_documentadas + '/' + m.colunas_declaradas + '</span></span>';
+    corpoCob.appendChild(tr);
+  });
+
+  const semGrao = DADOS.cobertura.filter((m) => !m.tem_teste_de_grao);
+  const efemeros = semGrao.filter((m) => m.materializacao === 'ephemeral');
+  el('nota-cobertura').innerHTML = semGrao.length === 0
+    ? '<strong>Todos os ' + rc.modelos + ' modelos têm o grão provado</strong> — por ' +
+      'unicidade de uma coluna ou de uma combinação delas, nas tabelas de grão composto. ' +
+      'É o teste que responde "o que é uma linha aqui", e sem ele qualquer contagem vira chute.'
+    : '<strong>' + semGrao.length + ' de ' + rc.modelos + ' modelos não têm teste de grão</strong>' +
+      (efemeros.length
+        ? ', e ' + efemeros.length + ' deles são <code>ephemeral</code>: não viram tabela no ' +
+          'banco, o código é injetado como CTE em quem os referencia, e o que produzem é ' +
+          'validado em <code>fct_pedidos</code>, onde o resultado passa a existir. '
+        : '. ') +
+      'Um dashboard de qualidade honesto mostra o buraco e explica o porquê, em vez de escondê-lo.';
+
+  /* ---- perfil ---------------------------------------------------------- */
+  const perfil = DADOS.perfil || [];
+  if (perfil.length) {
+    barras('bars-volume', perfil
+      .slice()
+      .sort((a, c) => c.linhas - a.linhas)
+      .map((t) => ({ nome: t.tabela, valor: t.linhas, classe: CAMADAS[t.camada] })), '13rem');
+
+    const abas = el('abas-perfil');
+    const preferida = perfil.find((t) => t.tabela === 'fct_pedidos') || perfil[0];
+
+    function mostrar(tabela) {
+      Array.from(abas.children).forEach((btn) =>
+        btn.setAttribute('aria-pressed', String(btn.dataset.tabela === tabela.tabela)));
+      const corpo = el('tb-perfil');
+      corpo.textContent = '';
+      tabela.colunas.forEach((c) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td class="mono"></td><td class="mono"></td><td class="n"></td>' +
+                       '<td class="n"></td><td class="n"></td><td></td>';
+        const td = tr.children;
+        td[0].textContent = c.coluna;
+        td[1].textContent = c.tipo;
+        td[2].textContent = n(c.nulos);
+        td[3].textContent = c.nulos_pct.toFixed(1).replace('.', ',') + '%';
+        td[4].textContent = n(c.distintos);
+        td[5].innerHTML = c.chave_candidata ? '<span class="pill ok">sim</span>' : '';
+        corpo.appendChild(tr);
+      });
+      const chaves = tabela.colunas.filter((c) => c.chave_candidata).length;
+      const comNulos = tabela.colunas.filter((c) => c.nulos > 0).length;
+      el('fonte-perfil').textContent =
+        tabela.schema + '.' + tabela.tabela + ' · ' + n(tabela.linhas) + ' linhas · ' +
+        tabela.colunas.length + ' colunas · ' + chaves + ' candidata(s) a chave · ' +
+        comNulos + ' coluna(s) com nulos';
+    }
+
+    perfil.forEach((t) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = t.tabela;
+      btn.dataset.tabela = t.tabela;
+      btn.setAttribute('aria-pressed', 'false');
+      btn.addEventListener('click', () => mostrar(t));
+      abas.appendChild(btn);
+    });
+    mostrar(preferida);
+  }
+
+  /* ---- histórico ------------------------------------------------------- */
+  const hist = (DADOS.historico || []).map((h, i) => Object.assign({ build: i + 1 }, h));
+
+  function linha(destino, campo, cor, sufixo) {
+    const caixa = el(destino);
+    if (!caixa) return;
+    const L = 40, R = 14, T = 14, B = 26, W = 600, H = 190;
+    if (hist.length < 2) {
+      caixa.innerHTML = '<p style="font-size:.82rem;color:var(--ink-faint);padding:14px 0">' +
+        'A tendência aparece a partir do segundo build. Por enquanto há ' + hist.length +
+        ' execução registrada.</p>';
+      return;
+    }
+    const xs = (i) => L + (i / (hist.length - 1)) * (W - L - R);
+    const ys = (v) => T + (1 - v / 100) * (H - T - B);
+    const pontos = hist.map((h, i) => [xs(i), ys(h[campo])]);
+    const d = pontos.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+
+    const grade = [0, 50, 100].map((v) =>
+      '<line x1="' + L + '" y1="' + ys(v) + '" x2="' + (W - R) + '" y2="' + ys(v) +
+      '" stroke="var(--line)" stroke-width="1"/>' +
+      '<text x="' + (L - 8) + '" y="' + (ys(v) + 4) +
+      '" text-anchor="end" font-size="11" fill="var(--ink-faint)" font-family="IBM Plex Mono, monospace">' +
+      v + '</text>').join('');
+
+    const marcas = pontos.map((p, i) =>
+      '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) +
+      '" r="3.5" fill="' + cor + '"><title>build ' + hist[i].build + ': ' +
+      hist[i][campo] + sufixo + '</title></circle>').join('');
+
+    const ultimo = pontos[pontos.length - 1];
+    caixa.innerHTML =
+      '<svg class="spark" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+      'aria-label="Evolução por build, último valor ' + hist[hist.length - 1][campo] + sufixo + '">' +
+      grade +
+      '<path d="' + d + '" fill="none" stroke="' + cor + '" stroke-width="2" ' +
+      'stroke-linejoin="round" stroke-linecap="round"/>' + marcas +
+      '<text x="' + (ultimo[0] - 6) + '" y="' + (ultimo[1] - 12) +
+      '" text-anchor="end" font-size="13" font-weight="600" fill="var(--ink)" ' +
+      'font-family="IBM Plex Mono, monospace">' + hist[hist.length - 1][campo] + sufixo + '</text>' +
+      '<text x="' + L + '" y="' + (H - 6) + '" font-size="11" fill="var(--ink-faint)" ' +
+      'font-family="IBM Plex Mono, monospace">build 1</text>' +
+      '<text x="' + (W - R) + '" y="' + (H - 6) + '" text-anchor="end" font-size="11" ' +
+      'fill="var(--ink-faint)" font-family="IBM Plex Mono, monospace">build ' +
+      hist[hist.length - 1].build + '</text></svg>';
+  }
+
+  linha('spark-aprovacao', 'aprovacao_pct', 'var(--ok)', '%');
+  linha('spark-cobertura', 'cobertura_doc_pct', 'var(--azure)', '%');
+
+  const corpoHist = el('tb-historico');
+  hist.slice().reverse().forEach((h) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td class="n"></td><td class="mono"></td><td></td><td class="n"></td>' +
+                   '<td class="n"></td><td class="n"></td><td class="n"></td>';
+    const td = tr.children;
+    td[0].textContent = h.build;
+    td[1].textContent = quando(h.gerado_em);
+    td[2].innerHTML = '<span class="pill ' + (h.status === 'aprovado' ? 'ok' : 'bad') + '">' +
+      h.status + '</span>';
+    td[3].textContent = h.testes_aprovados + '/' + h.testes_total;
+    td[4].textContent = h.aprovacao_pct + '%';
+    td[5].textContent = h.cobertura_doc_pct + '%';
+    td[6].textContent = h.duracao_s + 's';
+    corpoHist.appendChild(tr);
+  });
+})();
+</script>
+</body>
+</html>

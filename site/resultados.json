@@ -1,0 +1,39 @@
+{
+  "gerado_em": "2026-09-17T18:15:58+00:00",
+  "dbt_versao": "1.12.5",
+  "build": {
+    "status": "aprovado",
+    "testes_total": 75,
+    "testes_aprovados": 75,
+    "testes_reprovados": 0,
+    "duracao_testes_s": 5.78,
+    "duracao_total_s": 2.85
+  },
+  "por_tipo": {
+    "not_null": 36,
+    "unique": 16,
+    "accepted_values": 5,
+    "expression_is_true": 5,
+    "relationships": 4,
+    "accepted_range": 4,
+    "singular": 3,
+    "unique_combination_of_columns": 2
+  },
+  "por_camada": {
+    "bronze": 20,
+    "silver": 26,
+    "gold": 29
+  },
+  "modelos": {
+    "total": 15,
+    "por_materializacao": {
+      "ephemeral": 2,
+      "table": 6,
+      "view": 7
+    },
+    "com_teste_de_grao": 11,
+    "colunas_documentadas": 59
+  },
+  "fontes": 9,
+  "falhas": []
+}
