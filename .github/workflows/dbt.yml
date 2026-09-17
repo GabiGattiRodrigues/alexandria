@@ -62,6 +62,14 @@ jobs:
           python scripts/coletar_qualidade.py --banco alexandria_ci.duckdb
           python scripts/gerar_dashboard.py
 
+      # Registra o site do Pages pelo proprio workflow. Sem isso, o deploy
+      # depende de alguem ter ligado o Pages na mao antes, e falha com 404.
+      - name: Configurar o GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
       - name: Montar o site
         if: github.ref == 'refs/heads/main'
         run: |
