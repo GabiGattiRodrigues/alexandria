@@ -1,0 +1,112 @@
+name: dbt build e documentacao
+
+# A cada push o projeto e reconstruido do zero sobre a amostra sintetica e
+# todos os testes rodam. Se qualquer teste de qualidade falhar, o commit fica
+# marcado como quebrado — a mesma logica de um pipeline de producao, sem custo
+# de infraestrutura.
+#
+# O que vai para o GitHub Pages:
+#   /                  pagina do case      (site/index.html)
+#   /qualidade.html    dashboard de qualidade
+#   /docs/             documentacao do dbt com o grafo de linhagem
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build e testes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Instalar pacotes dbt
+        run: dbt deps
+
+      - name: Gerar amostra de dados
+        run: python scripts/gerar_amostra.py --destino data/sample --pedidos 4000
+
+      - name: Carregar camada bronze
+        run: python scripts/carregar_bronze.py --origem data/sample --banco alexandria_ci.duckdb
+
+      - name: Rodar modelos e testes
+        run: dbt build --target ci --profiles-dir .
+
+      - name: Gerar documentacao
+        run: dbt docs generate --target ci --profiles-dir .
+
+      - name: Coletar metadados de qualidade
+        run: |
+          python scripts/resumo_testes.py
+          python scripts/coletar_qualidade.py --banco alexandria_ci.duckdb
+          python scripts/gerar_dashboard.py
+
+      # Registra o site do Pages pelo proprio workflow. Sem isso, o deploy
+      # depende de alguem ter ligado o Pages na mao antes, e falha com 404.
+      - name: Configurar o GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Montar o site
+        if: github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p publicacao/docs
+          cp site/index.html site/qualidade.html publicacao/
+          cp site/resultados.json site/qualidade.json publicacao/
+          cp site/historico.jsonl publicacao/ 2>/dev/null || true
+          cp site/farol-de-alexandria.jpg publicacao/ 2>/dev/null || true
+          cp -r target/* publicacao/docs/
+          # Os artefatos internos do dbt nao precisam ir para a web.
+          rm -rf publicacao/docs/compiled publicacao/docs/run publicacao/docs/partial_parse.msgpack
+
+      - name: Publicar resultados dos testes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-run-results
+          path: |
+            target/run_results.json
+            site/qualidade.json
+          retention-days: 14
+
+      - name: Empacotar o site
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: publicacao
+
+  publicar:
+    name: Publicar no GitHub Pages
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
